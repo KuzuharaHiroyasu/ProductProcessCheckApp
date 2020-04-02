@@ -30,11 +30,16 @@ namespace ProductProcessCheckApp
 
         private String appName = "生産工程検査ソフト";
 
+        private IniFile ini;
+
         public FormMain()
         {
             InitializeComponent();
 
+            GetDataFromIniFile();
+
             this.Text = appName;
+            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -54,10 +59,11 @@ namespace ProductProcessCheckApp
                 StopScanning();
             }
 
-            DisconnectDevice();
-
             var message = gattService == null ? "Sleeimのデバイスを接続していません" : "Sleeimを切断完了しました";
             lblStatus.Text = message;
+
+            DisconnectDevice();
+            
             MessageBox.Show(message, appName);
         }
 
@@ -68,10 +74,6 @@ namespace ProductProcessCheckApp
 
         private async void sendData_Click(object sender, EventArgs e)
         {
-            //var MyIni = new IniFile("setting.ini");
-            //MyIni.Write("DefaultVolume", "100");
-            //MyIni.Write("HomePage", "http://www.google.com");
-
             if (writeCharacteristic != null)
             {
                 DialogResult res = MessageBox.Show("生産工程検査に状態変更コマンド[0xB0]を実行しますか？", "確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
@@ -124,7 +126,25 @@ namespace ProductProcessCheckApp
             writeCharacteristic = null;
             deviceList = new Dictionary<string, BluetoothLEDevice>();
 
-            lblAddress.Text = "BDアドレス[xx:xx:xx:xx:xx:xx]";
+            lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
+        }
+
+        private void GetDataFromIniFile()
+        {
+            ini = new IniFile("Setting.ini");
+            //ini.Write("HomePage", "http://www.google.com");
+
+            var modelName = ini.Read("MODEL", "MODEL_NAME");
+            var version = ini.Read("BUILD_VER", "VERSION");
+            if (modelName != "")
+            {
+                lblModelName.Text = "Ver：" + modelName;
+            }
+
+            if(version != "")
+            {
+                lblVersion.Text = "Ver：" + version;
+            }
         }
 
         private async void DeviceFound(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs args)

@@ -99,9 +99,9 @@
             this.lblCurrentDate.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCurrentDate.Location = new System.Drawing.Point(12, 8);
             this.lblCurrentDate.Name = "lblCurrentDate";
-            this.lblCurrentDate.Size = new System.Drawing.Size(187, 19);
+            this.lblCurrentDate.Size = new System.Drawing.Size(159, 19);
             this.lblCurrentDate.TabIndex = 0;
-            this.lblCurrentDate.Text = "DD/MM/YYYY HH:MM";
+            this.lblCurrentDate.Text = "--/--/---- --:--";
             // 
             // panel12
             // 
@@ -151,7 +151,7 @@
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(206, 19);
             this.lblVersion.TabIndex = 2;
-            this.lblVersion.Text = "Ver：xxx.xxx.xxx.xxx";
+            this.lblVersion.Text = "Ver：----------";
             // 
             // lblAddress
             // 
@@ -162,7 +162,7 @@
             this.lblAddress.Name = "lblAddress";
             this.lblAddress.Size = new System.Drawing.Size(277, 19);
             this.lblAddress.TabIndex = 1;
-            this.lblAddress.Text = "BDアドレス[xx:xx:xx:xx:xx:xx]";
+            this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
             // lblModelName
             // 
