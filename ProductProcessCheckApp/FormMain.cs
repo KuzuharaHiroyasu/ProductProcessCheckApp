@@ -36,7 +36,7 @@ namespace ProductProcessCheckApp
         {
             InitializeComponent();
 
-            GetDataFromIniFile();
+            LoadIniFile();
 
             this.Text = appName;
             this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
@@ -129,7 +129,7 @@ namespace ProductProcessCheckApp
             lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
         }
 
-        private void GetDataFromIniFile()
+        private void LoadIniFile()
         {
             ini = new IniFile("Setting.ini");
             //ini.Write("HomePage", "http://www.google.com");
@@ -138,7 +138,7 @@ namespace ProductProcessCheckApp
             var version = ini.Read("BUILD_VER", "VERSION");
             if (modelName != "")
             {
-                lblModelName.Text = "Ver：" + modelName;
+                lblModelName.Text = "機種名：" + modelName;
             }
 
             if(version != "")
