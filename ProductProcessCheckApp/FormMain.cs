@@ -12,6 +12,7 @@ using Windows.UI.Core;
 using Windows.Storage.Streams;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Security.Cryptography;
+using System.Drawing;
 
 namespace ProductProcessCheckApp
 {
@@ -36,10 +37,9 @@ namespace ProductProcessCheckApp
         {
             InitializeComponent();
 
-            LoadIniFile();
+            CustomGUI();
 
-            this.Text = appName;
-            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            LoadIniFile();
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -145,6 +145,26 @@ namespace ProductProcessCheckApp
             {
                 lblVersion.Text = "Ver：" + version;
             }
+        }
+
+        private void CustomGUI()
+        {
+            var blueColor = ColorTranslator.FromHtml("#65a7e3");
+            btnDisconnect.BackColor = blueColor;
+            btnConnect.BackColor    = blueColor;
+            btnNG.BackColor         = ColorTranslator.FromHtml("#ff842e");
+
+            lblTitleGood.ForeColor = ColorTranslator.FromHtml("#ff842e");
+            lblTitleNG.ForeColor   = ColorTranslator.FromHtml("#fe0000");
+            lblTitleRate.ForeColor = ColorTranslator.FromHtml("#246794");
+
+            this.Text = appName;
+            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+
+            Timer dateTimer = new Timer();
+            dateTimer.Interval = 10 * 1000; //秒で計算
+            dateTimer.Tick += new EventHandler(DateTimer_Tick);
+            dateTimer.Start();
         }
 
         private async void DeviceFound(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs args)
@@ -331,6 +351,11 @@ namespace ProductProcessCheckApp
                 lblStatus.Text = message;
                 MessageBox.Show(message, appName);
             }
+        }
+
+        private void DateTimer_Tick(object sender, EventArgs e)
+        {
+            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
         }
 
         public async Task SendCommandToDevice(string commandInfo)

@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.lblCurrentDate = new System.Windows.Forms.Label();
             this.panel12 = new System.Windows.Forms.Panel();
+            this.lblCurrentDate = new System.Windows.Forms.Label();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lblVersion = new System.Windows.Forms.Label();
@@ -53,9 +53,9 @@
             this.lblNumGood = new System.Windows.Forms.Label();
             this.lblNumTotal = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblTitleRate = new System.Windows.Forms.Label();
+            this.lblTitleNG = new System.Windows.Forms.Label();
+            this.lblTitleGood = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
@@ -64,11 +64,11 @@
             this.panel8 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.panel10 = new System.Windows.Forms.Panel();
             this.btnNG = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel12.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -85,6 +85,7 @@
             // 
             // panel1
             // 
+            this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.Controls.Add(this.panel12);
             this.panel1.Controls.Add(this.btnDisconnect);
             this.panel1.Controls.Add(this.tableLayoutPanel1);
@@ -92,6 +93,15 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1067, 43);
             this.panel1.TabIndex = 0;
+            // 
+            // panel12
+            // 
+            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel12.Controls.Add(this.lblCurrentDate);
+            this.panel12.Location = new System.Drawing.Point(839, 4);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(225, 36);
+            this.panel12.TabIndex = 2;
             // 
             // lblCurrentDate
             // 
@@ -102,15 +112,6 @@
             this.lblCurrentDate.Size = new System.Drawing.Size(159, 19);
             this.lblCurrentDate.TabIndex = 0;
             this.lblCurrentDate.Text = "--/--/---- --:--";
-            // 
-            // panel12
-            // 
-            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel12.Controls.Add(this.lblCurrentDate);
-            this.panel12.Location = new System.Drawing.Point(839, 4);
-            this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(225, 36);
-            this.panel12.TabIndex = 2;
             // 
             // btnDisconnect
             // 
@@ -131,7 +132,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51936F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48064F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 282F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 284F));
             this.tableLayoutPanel1.Controls.Add(this.lblVersion, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblModelName, 0, 0);
@@ -147,9 +148,9 @@
             this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblVersion.Location = new System.Drawing.Point(205, 8);
+            this.lblVersion.Location = new System.Drawing.Point(204, 8);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(206, 19);
+            this.lblVersion.Size = new System.Drawing.Size(205, 19);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "Ver：----------";
             // 
@@ -158,9 +159,9 @@
             this.lblAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAddress.AutoSize = true;
             this.lblAddress.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblAddress.Location = new System.Drawing.Point(418, 8);
+            this.lblAddress.Location = new System.Drawing.Point(416, 8);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(277, 19);
+            this.lblAddress.Size = new System.Drawing.Size(279, 19);
             this.lblAddress.TabIndex = 1;
             this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
@@ -171,7 +172,7 @@
             this.lblModelName.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblModelName.Location = new System.Drawing.Point(4, 8);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(194, 19);
+            this.lblModelName.Size = new System.Drawing.Size(193, 19);
             this.lblModelName.TabIndex = 0;
             this.lblModelName.Text = "機種名：----------";
             // 
@@ -194,6 +195,7 @@
             // 
             // btnEEPROM
             // 
+            this.btnEEPROM.BackColor = System.Drawing.Color.White;
             this.btnEEPROM.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnEEPROM.Location = new System.Drawing.Point(19, 436);
             this.btnEEPROM.Name = "btnEEPROM";
@@ -201,20 +203,22 @@
             this.btnEEPROM.TabIndex = 8;
             this.btnEEPROM.Text = "  ７：EEPROM";
             this.btnEEPROM.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEEPROM.UseVisualStyleBackColor = true;
+            this.btnEEPROM.UseVisualStyleBackColor = false;
             // 
             // btnFinish
             // 
+            this.btnFinish.BackColor = System.Drawing.Color.White;
             this.btnFinish.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnFinish.Location = new System.Drawing.Point(19, 503);
             this.btnFinish.Name = "btnFinish";
             this.btnFinish.Size = new System.Drawing.Size(188, 42);
             this.btnFinish.TabIndex = 7;
             this.btnFinish.Text = "完了";
-            this.btnFinish.UseVisualStyleBackColor = true;
+            this.btnFinish.UseVisualStyleBackColor = false;
             // 
             // btnAcceleSensor
             // 
+            this.btnAcceleSensor.BackColor = System.Drawing.Color.White;
             this.btnAcceleSensor.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnAcceleSensor.Location = new System.Drawing.Point(19, 315);
             this.btnAcceleSensor.Name = "btnAcceleSensor";
@@ -222,10 +226,11 @@
             this.btnAcceleSensor.TabIndex = 6;
             this.btnAcceleSensor.Text = "  ５：加速度センサー";
             this.btnAcceleSensor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAcceleSensor.UseVisualStyleBackColor = true;
+            this.btnAcceleSensor.UseVisualStyleBackColor = false;
             // 
             // btnMike
             // 
+            this.btnMike.BackColor = System.Drawing.Color.White;
             this.btnMike.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnMike.Location = new System.Drawing.Point(19, 254);
             this.btnMike.Name = "btnMike";
@@ -233,10 +238,11 @@
             this.btnMike.TabIndex = 5;
             this.btnMike.Text = "  ４：マイク";
             this.btnMike.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMike.UseVisualStyleBackColor = true;
+            this.btnMike.UseVisualStyleBackColor = false;
             // 
             // btnWearSensor
             // 
+            this.btnWearSensor.BackColor = System.Drawing.Color.White;
             this.btnWearSensor.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnWearSensor.Location = new System.Drawing.Point(19, 380);
             this.btnWearSensor.Name = "btnWearSensor";
@@ -244,10 +250,11 @@
             this.btnWearSensor.TabIndex = 4;
             this.btnWearSensor.Text = "  ６：装着センサー";
             this.btnWearSensor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnWearSensor.UseVisualStyleBackColor = true;
+            this.btnWearSensor.UseVisualStyleBackColor = false;
             // 
             // btnVibration
             // 
+            this.btnVibration.BackColor = System.Drawing.Color.White;
             this.btnVibration.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnVibration.Location = new System.Drawing.Point(19, 195);
             this.btnVibration.Name = "btnVibration";
@@ -255,10 +262,11 @@
             this.btnVibration.TabIndex = 3;
             this.btnVibration.Text = "  ３：バイブレーション";
             this.btnVibration.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnVibration.UseVisualStyleBackColor = true;
+            this.btnVibration.UseVisualStyleBackColor = false;
             // 
             // btnLED
             // 
+            this.btnLED.BackColor = System.Drawing.Color.White;
             this.btnLED.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnLED.Location = new System.Drawing.Point(19, 134);
             this.btnLED.Name = "btnLED";
@@ -266,11 +274,12 @@
             this.btnLED.TabIndex = 2;
             this.btnLED.Text = "  ２：ＬＥＤ";
             this.btnLED.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLED.UseVisualStyleBackColor = true;
+            this.btnLED.UseVisualStyleBackColor = false;
             // 
             // btnBattery
             // 
             this.btnBattery.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnBattery.BackColor = System.Drawing.Color.White;
             this.btnBattery.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnBattery.Location = new System.Drawing.Point(18, 73);
             this.btnBattery.Name = "btnBattery";
@@ -278,10 +287,11 @@
             this.btnBattery.TabIndex = 1;
             this.btnBattery.Text = "  １：充電";
             this.btnBattery.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnBattery.UseVisualStyleBackColor = true;
+            this.btnBattery.UseVisualStyleBackColor = false;
             // 
             // btnInspectTitle
             // 
+            this.btnInspectTitle.BackColor = System.Drawing.Color.White;
             this.btnInspectTitle.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnInspectTitle.Location = new System.Drawing.Point(19, 14);
             this.btnInspectTitle.Name = "btnInspectTitle";
@@ -302,12 +312,13 @@
             // 
             // tableLayoutPanel3
             // 
+            this.tableLayoutPanel3.BackColor = System.Drawing.Color.White;
             this.tableLayoutPanel3.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel3.ColumnCount = 4;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 89F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 91F));
             this.tableLayoutPanel3.Controls.Add(this.lblRate, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblNumNG, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblNumGood, 1, 0);
@@ -324,7 +335,7 @@
             this.lblRate.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblRate.AutoSize = true;
             this.lblRate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblRate.Location = new System.Drawing.Point(344, 15);
+            this.lblRate.Location = new System.Drawing.Point(343, 15);
             this.lblRate.Name = "lblRate";
             this.lblRate.Size = new System.Drawing.Size(53, 20);
             this.lblRate.TabIndex = 3;
@@ -336,7 +347,7 @@
             this.lblNumNG.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumNG.AutoSize = true;
             this.lblNumNG.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumNG.Location = new System.Drawing.Point(258, 15);
+            this.lblNumNG.Location = new System.Drawing.Point(256, 15);
             this.lblNumNG.Name = "lblNumNG";
             this.lblNumNG.Size = new System.Drawing.Size(29, 20);
             this.lblNumNG.TabIndex = 2;
@@ -348,7 +359,7 @@
             this.lblNumGood.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumGood.AutoSize = true;
             this.lblNumGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumGood.Location = new System.Drawing.Point(151, 15);
+            this.lblNumGood.Location = new System.Drawing.Point(149, 15);
             this.lblNumGood.Name = "lblNumGood";
             this.lblNumGood.Size = new System.Drawing.Size(29, 20);
             this.lblNumGood.TabIndex = 1;
@@ -360,7 +371,7 @@
             this.lblNumTotal.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumTotal.AutoSize = true;
             this.lblNumTotal.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumTotal.Location = new System.Drawing.Point(36, 15);
+            this.lblNumTotal.Location = new System.Drawing.Point(35, 15);
             this.lblNumTotal.Name = "lblNumTotal";
             this.lblNumTotal.Size = new System.Drawing.Size(39, 20);
             this.lblNumTotal.TabIndex = 0;
@@ -369,15 +380,16 @@
             // 
             // tableLayoutPanel2
             // 
+            this.tableLayoutPanel2.BackColor = System.Drawing.Color.White;
             this.tableLayoutPanel2.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 89F));
-            this.tableLayoutPanel2.Controls.Add(this.label4, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label3, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label2, 1, 0);
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 91F));
+            this.tableLayoutPanel2.Controls.Add(this.lblTitleRate, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblTitleNG, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblTitleGood, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(20, 14);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -386,51 +398,51 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(417, 54);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
-            // label4
+            // lblTitleRate
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label4.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.label4.Location = new System.Drawing.Point(336, 17);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(69, 20);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "不良率";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitleRate.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblTitleRate.AutoSize = true;
+            this.lblTitleRate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblTitleRate.ForeColor = System.Drawing.Color.DodgerBlue;
+            this.lblTitleRate.Location = new System.Drawing.Point(335, 17);
+            this.lblTitleRate.Name = "lblTitleRate";
+            this.lblTitleRate.Size = new System.Drawing.Size(69, 20);
+            this.lblTitleRate.TabIndex = 3;
+            this.lblTitleRate.Text = "不良率";
+            this.lblTitleRate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label3
+            // lblTitleNG
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label3.ForeColor = System.Drawing.Color.DeepPink;
-            this.label3.Location = new System.Drawing.Point(255, 17);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 20);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "NG";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitleNG.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblTitleNG.AutoSize = true;
+            this.lblTitleNG.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblTitleNG.ForeColor = System.Drawing.Color.DeepPink;
+            this.lblTitleNG.Location = new System.Drawing.Point(253, 17);
+            this.lblTitleNG.Name = "lblTitleNG";
+            this.lblTitleNG.Size = new System.Drawing.Size(36, 20);
+            this.lblTitleNG.TabIndex = 2;
+            this.lblTitleNG.Text = "NG";
+            this.lblTitleNG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label2
+            // lblTitleGood
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label2.ForeColor = System.Drawing.Color.MediumSeaGreen;
-            this.label2.Location = new System.Drawing.Point(133, 17);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(64, 20);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "GOOD";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitleGood.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblTitleGood.AutoSize = true;
+            this.lblTitleGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblTitleGood.ForeColor = System.Drawing.Color.MediumSeaGreen;
+            this.lblTitleGood.Location = new System.Drawing.Point(132, 17);
+            this.lblTitleGood.Name = "lblTitleGood";
+            this.lblTitleGood.Size = new System.Drawing.Size(64, 20);
+            this.lblTitleGood.TabIndex = 1;
+            this.lblTitleGood.Text = "GOOD";
+            this.lblTitleGood.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(31, 17);
+            this.label1.Location = new System.Drawing.Point(30, 17);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 20);
             this.label1.TabIndex = 0;
@@ -439,6 +451,7 @@
             // 
             // panel6
             // 
+            this.panel6.BackColor = System.Drawing.Color.White;
             this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel6.Controls.Add(this.label5);
             this.panel6.Location = new System.Drawing.Point(252, 242);
@@ -460,6 +473,7 @@
             // 
             // panel7
             // 
+            this.panel7.BackColor = System.Drawing.Color.White;
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel7.Controls.Add(this.label6);
             this.panel7.Location = new System.Drawing.Point(252, 378);
@@ -481,6 +495,7 @@
             // 
             // panel8
             // 
+            this.panel8.BackColor = System.Drawing.Color.White;
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel8.Controls.Add(this.label7);
             this.panel8.Location = new System.Drawing.Point(252, 528);
@@ -492,6 +507,7 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.White;
             this.label7.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label7.Location = new System.Drawing.Point(97, 51);
             this.label7.Name = "label7";
@@ -501,6 +517,7 @@
             // 
             // panel9
             // 
+            this.panel9.BackColor = System.Drawing.Color.White;
             this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel9.Controls.Add(this.lblStatus);
             this.panel9.Location = new System.Drawing.Point(728, 62);
@@ -508,8 +525,18 @@
             this.panel9.Size = new System.Drawing.Size(349, 116);
             this.panel9.TabIndex = 6;
             // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(13, 14);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(37, 15);
+            this.lblStatus.TabIndex = 0;
+            this.lblStatus.Text = "状態";
+            // 
             // panel10
             // 
+            this.panel10.BackColor = System.Drawing.Color.White;
             this.panel10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel10.Controls.Add(this.btnNG);
             this.panel10.Controls.Add(this.btnConnect);
@@ -546,20 +573,12 @@
             // 
             // panel11
             // 
+            this.panel11.BackColor = System.Drawing.Color.White;
             this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel11.Location = new System.Drawing.Point(728, 300);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(349, 354);
             this.panel11.TabIndex = 8;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(13, 14);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(37, 15);
-            this.lblStatus.TabIndex = 0;
-            this.lblStatus.Text = "状態";
             // 
             // FormMain
             // 
@@ -637,9 +656,9 @@
         private System.Windows.Forms.Label lblNumGood;
         private System.Windows.Forms.Label lblNumTotal;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblTitleRate;
+        private System.Windows.Forms.Label lblTitleNG;
+        private System.Windows.Forms.Label lblTitleGood;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
