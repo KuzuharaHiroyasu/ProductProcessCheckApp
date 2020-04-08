@@ -335,11 +335,11 @@
             this.lblRate.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblRate.AutoSize = true;
             this.lblRate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblRate.Location = new System.Drawing.Point(343, 15);
+            this.lblRate.Location = new System.Drawing.Point(348, 15);
             this.lblRate.Name = "lblRate";
-            this.lblRate.Size = new System.Drawing.Size(53, 20);
+            this.lblRate.Size = new System.Drawing.Size(43, 20);
             this.lblRate.TabIndex = 3;
-            this.lblRate.Text = "10.0%";
+            this.lblRate.Text = "0.0%";
             this.lblRate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblNumNG
@@ -347,11 +347,11 @@
             this.lblNumNG.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumNG.AutoSize = true;
             this.lblNumNG.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumNG.Location = new System.Drawing.Point(256, 15);
+            this.lblNumNG.Location = new System.Drawing.Point(261, 15);
             this.lblNumNG.Name = "lblNumNG";
-            this.lblNumNG.Size = new System.Drawing.Size(29, 20);
+            this.lblNumNG.Size = new System.Drawing.Size(19, 20);
             this.lblNumNG.TabIndex = 2;
-            this.lblNumNG.Text = "10";
+            this.lblNumNG.Text = "0";
             this.lblNumNG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblNumGood
@@ -359,11 +359,11 @@
             this.lblNumGood.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumGood.AutoSize = true;
             this.lblNumGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumGood.Location = new System.Drawing.Point(149, 15);
+            this.lblNumGood.Location = new System.Drawing.Point(154, 15);
             this.lblNumGood.Name = "lblNumGood";
-            this.lblNumGood.Size = new System.Drawing.Size(29, 20);
+            this.lblNumGood.Size = new System.Drawing.Size(19, 20);
             this.lblNumGood.TabIndex = 1;
-            this.lblNumGood.Text = "90";
+            this.lblNumGood.Text = "0";
             this.lblNumGood.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblNumTotal
@@ -371,11 +371,11 @@
             this.lblNumTotal.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumTotal.AutoSize = true;
             this.lblNumTotal.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumTotal.Location = new System.Drawing.Point(35, 15);
+            this.lblNumTotal.Location = new System.Drawing.Point(45, 15);
             this.lblNumTotal.Name = "lblNumTotal";
-            this.lblNumTotal.Size = new System.Drawing.Size(39, 20);
+            this.lblNumTotal.Size = new System.Drawing.Size(19, 20);
             this.lblNumTotal.TabIndex = 0;
-            this.lblNumTotal.Text = "100";
+            this.lblNumTotal.Text = "0";
             this.lblNumTotal.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel2

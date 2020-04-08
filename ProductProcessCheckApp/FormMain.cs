@@ -23,13 +23,13 @@ namespace ProductProcessCheckApp
         public GattDeviceService gattService;
         public GattCharacteristic readCharacteristic, writeCharacteristic;
 
-        //private String serviceUUID = BluetoothManager.UUID_SERVICE_DECLARATION; //サービスUUID
+        public List<GattCharacteristic> characteristicList = new List<GattCharacteristic>();
+
         public Dictionary<string, BluetoothLEDevice> deviceList = new Dictionary<string, BluetoothLEDevice>();
 
         private Timer connectTimer = new Timer();
         private Boolean startedFlag = false;
-
-        private String appName = "生産工程検査ソフト";
+        private DeviceStatus deviceStatus = DeviceStatus.NOT_CONNECT;
 
         private IniFile ini;
 
@@ -42,14 +42,29 @@ namespace ProductProcessCheckApp
             LoadIniFile();
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private async　void btnConnect_Click(object sender, EventArgs e)
         {
-            DisconnectDevice();
+            if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
+            {
+                DisconnectDevice();
 
-            SetupSearchTimeOut();
-            SetupBluetooth();
+                SetupSearchTimeOut();
+                SetupBluetooth();
 
-            lblStatus.Text = "Sleeimを検索しています...";
+                lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
+            } else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) //状態変更コマンド(0xB0)送信
+            {
+                sendCommandStatusChange();
+            } else if (deviceStatus == DeviceStatus.STARTED) 
+            {
+                MessageBox.Show("未対応", Constant.APP_NAME);
+            } else if (deviceStatus == DeviceStatus.OK_MANUAL_DID)
+            {
+                MessageBox.Show("未対応", Constant.APP_NAME);
+            } else if (deviceStatus == DeviceStatus.AUTO_CHECKED)
+            {
+                MessageBox.Show("未対応", Constant.APP_NAME);
+            }
         }
 
         private void btnDisconnect_Click(object sender, EventArgs e)
@@ -59,45 +74,45 @@ namespace ProductProcessCheckApp
                 StopScanning();
             }
 
-            var message = gattService == null ? "Sleeimのデバイスを接続していません" : "Sleeimを切断完了しました";
+            var message = gattService == null ? Constant.MSG_SLEEIM_IS_NOT_CONNECTING : Constant.MSG_SLEEIM_DISCONNECTED;
             lblStatus.Text = message;
 
             DisconnectDevice();
             
-            MessageBox.Show(message, appName);
+            MessageBox.Show(message, Constant.APP_NAME);
         }
 
-        private void btnNG_Click(object sender, EventArgs e)
+        private async void btnNG_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("未対応", Constant.APP_NAME);
         }
 
-        private async void sendData_Click(object sender, EventArgs e)
+        private void UpdateDeviceStatus(DeviceStatus status, String statusMessage = "", bool showDialog = true)
         {
-            if (writeCharacteristic != null)
+            deviceStatus = status;
+            if(status == DeviceStatus.CONNECT_SUCCESS)
             {
-                DialogResult res = MessageBox.Show("生産工程検査に状態変更コマンド[0xB0]を実行しますか？", "確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                if (res == DialogResult.OK)
-                {
-                    byte commandCode = 0xC7;
-                    //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
-                    int commandStatus = 2;
-
-                    byte[] tmp = new byte[] { commandCode, (byte)commandStatus };
-                    await WriteCommandToDevice(tmp);
-                }
-                else if (res == DialogResult.Cancel)
-                {
-                    //MessageBox.Show("You have clicked Cancel Button");
-                }
-            }
-            else
+                btnConnect.Text = "START";
+            } else if (status == DeviceStatus.STARTED)
             {
-                var message = "Sleeimのデバイスを接続していません";
-                lblStatus.Text = message;
-                MessageBox.Show(message, appName);
+                btnConnect.Text = "OK(手動)";
+            } else if (status == DeviceStatus.OK_MANUAL_DID)
+            {
+                btnConnect.Text = "自動検査";
+            } else
+            {
+                deviceStatus = DeviceStatus.NOT_CONNECT;
+                btnConnect.Text = "接続";
             }
 
+            if (statusMessage != "")
+            {
+                lblStatus.Text = statusMessage;
+                if(showDialog)
+                {
+                    MessageBox.Show(statusMessage, Constant.APP_NAME);
+                }
+            }
         }
 
         private void SetupBluetooth()
@@ -127,6 +142,7 @@ namespace ProductProcessCheckApp
             deviceList = new Dictionary<string, BluetoothLEDevice>();
 
             lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
+            UpdateDeviceStatus(DeviceStatus.NOT_CONNECT);
         }
 
         private void LoadIniFile()
@@ -158,7 +174,7 @@ namespace ProductProcessCheckApp
             lblTitleNG.ForeColor   = ColorTranslator.FromHtml("#fe0000");
             lblTitleRate.ForeColor = ColorTranslator.FromHtml("#246794");
 
-            this.Text = appName;
+            this.Text = Constant.APP_NAME;
             this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
 
             Timer dateTimer = new Timer();
@@ -191,15 +207,12 @@ namespace ProductProcessCheckApp
                 {
                     StopScanning();
 
-                    message = "Sleeim[" + address + "]を成功に接続しました";
-                    lblStatus.Text = message;
+                    UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
                     lblAddress.Text = "BDアドレス[" + address + "]";
-                    MessageBox.Show(message, appName);
                 }
                 else
                 {
-                    message = "Sleeim[" + address + "]を失敗に接続しました";
-                    lblStatus.Text = message;
+                    UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
                 }
             }
         }
@@ -267,60 +280,49 @@ namespace ProductProcessCheckApp
         private async Task<bool> ConnectDevice(BluetoothLEDevice device)
         {
             var gatt = await device.GetGattServicesAsync();
-
             Debug.WriteLine($"{device.Name} Services: {gatt.Services.Count}, {gatt.Status}, {gatt.ProtocolError}");
-            foreach (var tmp in gatt.Services)
-            {
-                Debug.WriteLine($"Uuid {tmp.Uuid}, DeviceId {tmp.DeviceId}");
-            }
 
             if (gatt.Status == GattCommunicationStatus.Success)
             {
-                //this.gattService = device.GetGattService(new Guid(BluetoothManager.UUID_SERVICE_DECLARATION));
-                var gattServiceResult = await device.GetGattServicesForUuidAsync(new Guid(BluetoothManager.UUID_SERVICE_DECLARATION));
-                this.gattService = gattServiceResult.Services.FirstOrDefault();
-
-                if (this.gattService != null)
+                foreach (var service in gatt.Services)
                 {
-                    GattCharacteristicsResult readCharacteristicResult = await gattService.GetCharacteristicsForUuidAsync(new Guid(BluetoothManager.UUID_READ_DECLARATION));
-                    GattCharacteristicsResult writeCharacteristicResult = await gattService.GetCharacteristicsForUuidAsync(new Guid(BluetoothManager.UUID_WRITE_DECLARATION));
+                    Debug.WriteLine($"Service: UUID {service.Uuid}, ShareMode {service.SharingMode}, DeviceId {service.DeviceId}");
 
-                    readCharacteristic = readCharacteristicResult.Characteristics.FirstOrDefault(servchar => Utility.GetUUIDString(servchar.Uuid) == BluetoothManager.UUID_READ_DECLARATION);
-                    writeCharacteristic = writeCharacteristicResult.Characteristics.FirstOrDefault(servchar => Utility.GetUUIDString(servchar.Uuid) == BluetoothManager.UUID_WRITE_DECLARATION);
-
-                    if (readCharacteristic != null)
+                    var charactersResult = await service.GetCharacteristicsAsync();
+                    foreach (var chara in charactersResult.Characteristics)
                     {
-                        Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
-                        readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
-
-                        /*
-                        var charResult = await readCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);        
-                        if (readCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read)) {
-                            //This characteristic supports reading from it
-                        }
-                        if (readCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write)) {
-                            //This characteristic supports writing to it
-                        }
-                        if (readCharacteristic.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify)) {
-                            //This characteristic supports subscribing to notifications
-                        }*/
+                        characteristicList.Add(chara);
+                        Debug.WriteLine($"Characteristic UUID {chara.Uuid}, Permission:{chara.CharacteristicProperties}");
                     }
 
-                    if (writeCharacteristic != null)
+                    if(service.Uuid == new Guid(Constant.UUID_SERVICE))
                     {
-                        Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
-                        //writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
+                        this.gattService = service;
 
-                        return true;
+                        GattCharacteristicsResult readCharacteristicResult = await gattService.GetCharacteristicsForUuidAsync(new Guid(Constant.UUID_CHAR_READ));
+                        GattCharacteristicsResult writeCharacteristicResult = await gattService.GetCharacteristicsForUuidAsync(new Guid(Constant.UUID_CHAR_WRITE));
+
+                        readCharacteristic = readCharacteristicResult.Characteristics.FirstOrDefault();
+                        writeCharacteristic = writeCharacteristicResult.Characteristics.FirstOrDefault();
+
+                        if (readCharacteristic != null)
+                        {
+                            Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
+                            readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
+                        }
+
+                        if (writeCharacteristic != null)
+                        {
+                            Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
+                            writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
+
+                            return true;
+                        }
                     }
-
-                    /* var serviceAllCharacteristics = await gattService.GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
-                    if (serviceAllCharacteristics.Status == GattCommunicationStatus.Success)
-                    {
-                        readCharacteristic = serviceAllCharacteristics.Characteristics.FirstOrDefault(servchar => Utility.GetUUIDString(servchar.Uuid) == BluetoothManager.UUID_READ_DECLARATION);
-                        writeCharacteristic = serviceAllCharacteristics.Characteristics.FirstOrDefault(servchar => Utility.GetUUIDString(servchar.Uuid) == BluetoothManager.UUID_WRITE_DECLARATION);
-                    } */
                 }
+
+                //var gattServiceResult = await device.GetGattServicesForUuidAsync(new Guid(Constant.UUID_SERVICE));
+                //this.gattService = gattServiceResult.Services.FirstOrDefault();
             }
 
             return false;
@@ -329,7 +331,7 @@ namespace ProductProcessCheckApp
         private void SetupSearchTimeOut()
         {
             startedFlag = true;
-            connectTimer.Interval = BluetoothManager.MAX_SEARCH_TIME; //秒で計算
+            connectTimer.Interval = Constant.MAX_SEARCH_TIME; //秒で計算
             connectTimer.Tick += new EventHandler(ConnectTimer_Tick);
             connectTimer.Start();
         }
@@ -347,9 +349,7 @@ namespace ProductProcessCheckApp
 
                 StopScanning();
 
-                var message = "Sleeimのデバイスが見つかりません";
-                lblStatus.Text = message;
-                MessageBox.Show(message, appName);
+                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_NOT_FOUND);
             }
         }
 
@@ -385,18 +385,20 @@ namespace ProductProcessCheckApp
 
                 try
                 {
-                    GattCommunicationStatus result = await writeCharacteristic.WriteValueAsync(writeBuffer);
+                    GattCommunicationStatus result = await writeCharacteristic.WriteValueAsync(writeBuffer, GattWriteOption.WriteWithResponse);
 
                     Console.WriteLine($"WriteCharacterValue result:{result}");
                     //await selectedReadCharacter.KeepRunnig(selectedWriteCharacter, sndbuf);
                     if (result == GattCommunicationStatus.Unreachable)
                     {
                         MessageBox.Show("Command Write Failed (Unreachable)");
+                        Debug.WriteLine("Command Write Failed (Unreachable)");
                         return 1;
                     }
                     else if (result == GattCommunicationStatus.ProtocolError)
                     {
                         MessageBox.Show("Command Write Failed (ProtocolError)");
+                        Debug.WriteLine("Command Write Failed (ProtocolError)");
                         return 2;
                     }
                     else if (result == GattCommunicationStatus.Success)
@@ -414,9 +416,7 @@ namespace ProductProcessCheckApp
             }
             else
             {
-                var message = "Sleeimのデバイスを接続していません";
-                lblStatus.Text = message;
-                MessageBox.Show(message, appName);
+                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_IS_NOT_CONNECTING);
             }
 
             return -1;
@@ -452,7 +452,7 @@ namespace ProductProcessCheckApp
             try
             {
                 // BT_Code: Writes the value from the buffer to the characteristic.  
-                var gattCharacteristic = gattService.GetCharacteristics(new Guid(BluetoothManager.UUID_WRITE_DECLARATION)).First();
+                var gattCharacteristic = gattService.GetCharacteristics(new Guid(Constant.UUID_CHAR_WRITE)).First();
                 var result = await gattCharacteristic.WriteValueAsync(writer);
                 if (result == GattCommunicationStatus.Success)
                 {
@@ -505,10 +505,31 @@ namespace ProductProcessCheckApp
             Debug.WriteLine($"Device updated: {update.Id}");
         }
 
-        private async void ConnectDeviceByDeviceInfo(DeviceInformation deviceInfo)
+        private async void sendCommandStatusChange()
         {
-            // Note: BluetoothLEDevice.FromIdAsync must be called from a UI thread because it may prompt for consent
-            BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
+            if (writeCharacteristic != null)
+            {
+                DialogResult res = MessageBox.Show("生産工程検査に状態変更コマンド[0xB0]を実行しますか？", "確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                if (res == DialogResult.OK)
+                {
+                    lblStatus.Text = "状態変更コマンド(0xB0)を送信中...";
+
+                    byte commandCode = Constant.CommandStatusChange;
+                    //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
+                    int commandStatus = 6;
+
+                    byte[] tmp = new byte[] { commandCode, (byte)commandStatus };
+                    await WriteCommandToDevice(tmp);
+                }
+                else if (res == DialogResult.Cancel)
+                {
+
+                }
+            }
+            else
+            {
+                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_IS_NOT_CONNECTING);
+            }
         }
     }
 }
