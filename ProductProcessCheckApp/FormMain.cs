@@ -42,7 +42,7 @@ namespace ProductProcessCheckApp
             LoadIniFile();
         }
 
-        private async　void btnConnect_Click(object sender, EventArgs e)
+        private async void btnConnect_Click(object sender, EventArgs e)
         {
             if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
@@ -52,18 +52,23 @@ namespace ProductProcessCheckApp
                 SetupBluetooth();
 
                 lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
-            } else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) //状態変更コマンド(0xB0)送信
+            } else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) 
             {
-                sendCommandStatusChange();
-            } else if (deviceStatus == DeviceStatus.STARTED) 
+                //[START]ボタンクリック
+                sendCommandStatusChange();　//状態変更コマンド(0xB0)送信
+            } else if (deviceStatus == DeviceStatus.DETECT_BATTERY_OK) 
             {
-                MessageBox.Show("未対応", Constant.APP_NAME);
-            } else if (deviceStatus == DeviceStatus.OK_MANUAL_DID)
+                //[OK(手動)]ボタンクリック
+                sendCommandDetectBatteryFinish();
+            } else if (deviceStatus == DeviceStatus.DETECT_LED_OK)
             {
-                MessageBox.Show("未対応", Constant.APP_NAME);
-            } else if (deviceStatus == DeviceStatus.AUTO_CHECKED)
+                //[OK(手動)]ボタンクリック
+                sendCommandDetectLEDFinish();
+            } else if (deviceStatus == DeviceStatus.DETECT_VIBRATION_OK)
             {
-                MessageBox.Show("未対応", Constant.APP_NAME);
+                //[OK(手動)]ボタンクリック
+                sendCommandDetectVibrationFinish();
+                //MessageBox.Show("未対応", Constant.APP_NAME);
             }
         }
 
@@ -93,13 +98,14 @@ namespace ProductProcessCheckApp
             if(status == DeviceStatus.CONNECT_SUCCESS)
             {
                 btnConnect.Text = "START";
-            } else if (status == DeviceStatus.STARTED)
+                btnDisconnect.Enabled = true;
+            } else if (status == DeviceStatus.STATUS_CHANGE_OK)
             {
                 btnConnect.Text = "OK(手動)";
-            } else if (status == DeviceStatus.OK_MANUAL_DID)
+            } else if (status == DeviceStatus.DETECT_VIBRATION_FINISH_OK)
             {
                 btnConnect.Text = "自動検査";
-            } else
+            } else if (status == DeviceStatus.NOT_CONNECT || status == DeviceStatus.CONNECT_FAILED)
             {
                 deviceStatus = DeviceStatus.NOT_CONNECT;
                 btnConnect.Text = "接続";
@@ -320,9 +326,6 @@ namespace ProductProcessCheckApp
                         }
                     }
                 }
-
-                //var gattServiceResult = await device.GetGattServicesForUuidAsync(new Guid(Constant.UUID_SERVICE));
-                //this.gattService = gattServiceResult.Services.FirstOrDefault();
             }
 
             return false;
@@ -374,7 +377,7 @@ namespace ProductProcessCheckApp
             await WriteCommandToDevice(tmp);
         }
 
-        public async Task<int> WriteCommandToDevice(byte[] commandData)
+        public async Task<CommandResult> WriteCommandToDevice(byte[] commandData)
         {
             if (writeCharacteristic != null)
             {
@@ -391,35 +394,36 @@ namespace ProductProcessCheckApp
                     //await selectedReadCharacter.KeepRunnig(selectedWriteCharacter, sndbuf);
                     if (result == GattCommunicationStatus.Unreachable)
                     {
-                        MessageBox.Show("Command Write Failed (Unreachable)");
+                        //MessageBox.Show("Command Write Failed (Unreachable)");
                         Debug.WriteLine("Command Write Failed (Unreachable)");
-                        return 1;
+                        return CommandResult.UNREACHABLE;
                     }
                     else if (result == GattCommunicationStatus.ProtocolError)
                     {
-                        MessageBox.Show("Command Write Failed (ProtocolError)");
+                        //MessageBox.Show("Command Write Failed (ProtocolError)");
                         Debug.WriteLine("Command Write Failed (ProtocolError)");
-                        return 2;
+                        return CommandResult.PROTOCOL_ERROR;
                     }
                     else if (result == GattCommunicationStatus.Success)
                     {
                         //readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
-                        MessageBox.Show("Command Write Successfully");
-                        return 0;
+                        //MessageBox.Show("Command Write Successfully");
+                        return CommandResult.SUCCESS;
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Command Write Failed. Exception: " + ex.Message);
+                    //MessageBox.Show("Command Write Failed. Exception: " + ex.Message);
                     Debug.WriteLine("Write, Exception: " + ex.Message);
                 }
             }
             else
             {
                 UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_IS_NOT_CONNECTING);
+                return CommandResult.NOT_CONNECT;
             }
 
-            return -1;
+            return CommandResult.UNKNOW_ERROR;
         }
 
         public async Task ReadValue()
@@ -488,16 +492,7 @@ namespace ProductProcessCheckApp
 
         private async void DeviceAdded(DeviceWatcher watcher, DeviceInformation device)
         {
-            /* Debug.WriteLine($"Device added");
-            try
-            {
-                var service = await GattDeviceService.FromIdAsync(device.Id);
-                //Debug.WriteLine("Opened Service!!");
-            }
-            catch
-            {
-                //Debug.WriteLine("Failed to open service.");
-            }*/
+            //Debug.WriteLine("Device added");
         }
 
         private void DeviceUpdated(DeviceWatcher watcher, DeviceInformationUpdate update)
@@ -505,31 +500,151 @@ namespace ProductProcessCheckApp
             Debug.WriteLine($"Device updated: {update.Id}");
         }
 
+        //[START]ボタンクリック
         private async void sendCommandStatusChange()
+        {
+            int commandStatus = 6; //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
+            byte[] commandData = new byte[] { Constant.CommandStatusChange, (byte)commandStatus };
+
+            var result = await sendCommand(Constant.CommandStatusChange, "状態変更コマンド[0xB0]", commandData);
+            if(result)
+            {
+                UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
+                sendCommandDetectBatteryStart();
+            }
+        }
+
+        private async void sendCommandDetectBatteryStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectBattery, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectBattery, "充電検査開始[0xA0]", commandData);
+            if (result)
+            {
+                btnBattery.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_BATTERY_OK);
+            }
+        }
+
+        //[OK(手動)]ボタンクリック
+        private async void sendCommandDetectBatteryFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectBattery, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommand(Constant.CommandDetectBattery, "充電検査終了[0xA0]", commandData);
+            if (result)
+            {
+                btnBattery.BackColor = Color.White; //Reset
+                sendCommandDetectLEDStart();
+            }
+        }
+
+        private async void sendCommandDetectLEDStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectLED, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectLED, "LED検査開始[0xA1]", commandData);
+            if (result)
+            {
+                btnLED.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_LED_OK);
+            }
+        }
+
+        //[OK(手動)]ボタンクリック
+        private async void sendCommandDetectLEDFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectLED, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommand(Constant.CommandDetectLED, "LED検査終了[0xA1]", commandData);
+            if (result)
+            {
+                btnLED.BackColor = Color.White; //Reset
+                sendCommandDetectVibrationStart();
+            }
+        }
+
+        private async void sendCommandDetectVibrationStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectVibration, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectVibration, "バイブレーション検査開始[0xA2]", commandData);
+            if (result)
+            {
+                btnVibration.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_OK);
+            }
+        }
+
+        //[OK(手動)]ボタンクリック
+        private async void sendCommandDetectVibrationFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectVibration, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommand(Constant.CommandDetectVibration, "バイブレーション検査終了[0xA2]", commandData);
+            if (result)
+            {
+                btnVibration.BackColor = Color.White; //Reset
+                UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
+            }
+        }
+
+        private async Task<bool> sendCommand(byte commandCode, string commandName, byte[] commandData)
         {
             if (writeCharacteristic != null)
             {
-                DialogResult res = MessageBox.Show("生産工程検査に状態変更コマンド[0xB0]を実行しますか？", "確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                DialogResult res = MessageBox.Show(commandName + "を実行しますか？", "確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 if (res == DialogResult.OK)
                 {
-                    lblStatus.Text = "状態変更コマンド(0xB0)を送信中...";
+                    lblStatus.Text = commandName + "を送信中...";
 
-                    byte commandCode = Constant.CommandStatusChange;
-                    //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
-                    int commandStatus = 6;
-
-                    byte[] tmp = new byte[] { commandCode, (byte)commandStatus };
-                    await WriteCommandToDevice(tmp);
+                    var result = await WriteCommandToDevice(commandData);
+                    if (result == CommandResult.SUCCESS)
+                    {
+                        lblStatus.Text = commandName + "を成功に送信しました";
+                        return true;
+                    }
+                    else
+                    {
+                        lblStatus.Text = commandName + "を失敗に送信しました";
+                    }
                 }
                 else if (res == DialogResult.Cancel)
                 {
-
+                    //Do nothing
                 }
             }
             else
             {
                 UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_IS_NOT_CONNECTING);
             }
+
+            return false;
+        }
+
+        private async Task<bool> sendCommandAuto(byte commandCode, string commandName, byte[] commandData)
+        {
+            if (writeCharacteristic != null)
+            {
+                lblStatus.Text = commandName + "を送信中...";
+
+                var result = await WriteCommandToDevice(commandData);
+                if (result == CommandResult.SUCCESS)
+                {
+                    lblStatus.Text = commandName + "を成功に送信しました";
+                    return true;
+                }
+                else
+                {
+                    lblStatus.Text = commandName + "を失敗に送信しました";
+                }
+            }
+            else
+            {
+                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_IS_NOT_CONNECTING);
+            }
+
+            return false;
         }
     }
 }

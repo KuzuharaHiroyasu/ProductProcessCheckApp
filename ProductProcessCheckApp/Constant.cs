@@ -57,11 +57,34 @@ namespace ProductProcessCheckApp
 
     public enum DeviceStatus
     {
-        NOT_CONNECT     = 0, //[未接続]ステータス
-        CONNECT_FAILED  = 1, //[接続失敗]ステータス
-        CONNECT_SUCCESS = 2, //[成功に接続後]ステータス
-        STARTED         = 3, //[状態変更コマンド(0xB0)送信後]ステータス
-        OK_MANUAL_DID   = 4, //[OK(手動)後]ステータス
-        AUTO_CHECKED    = 5, //[自動検査後]ステータス
+        NOT_CONNECT                = 0, //[未接続]ステータス
+        CONNECT_FAILED             = 1, //[接続失敗]ステータス
+        CONNECT_SUCCESS            = 2, //[成功に接続後]ステータス
+        STATUS_CHANGE_OK           = 3, //[状態変更コマンド(0xB0)送信後]ステータス
+        DETECT_BATTERY_OK          = 4, //[充電検査開始コマンド送信後]ステータス
+        DETECT_LED_OK              = 5, //[LED検査開始コマンド送信後]ステータス
+        DETECT_VIBRATION_OK        = 6, //[バイブレーション検査開始コマンド送信後]ステータス
+        DETECT_VIBRATION_FINISH_OK = 7, //[バイブレーション検査終了コマンド送信後]ステータス
+    }
+
+    public enum CommandResult
+    {
+        SUCCESS = 0,
+        UNREACHABLE = 1,
+        PROTOCOL_ERROR = 2,
+        NOT_CONNECT = 3,
+        UNKNOW_ERROR = -1
+    }    
+
+    public enum CommandFlag
+    {
+        START = 0, //0：開始
+        FINISH = 1 //1：終了
+    }
+
+    public enum CommandReturn
+    {
+        SUCCESS = 0, //0：OK(成功)
+        NOT_GOOD = 1   //1：NG(失敗)
     }
 }

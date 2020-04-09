@@ -116,6 +116,7 @@
             // btnDisconnect
             // 
             this.btnDisconnect.BackColor = System.Drawing.Color.MediumTurquoise;
+            this.btnDisconnect.Enabled = false;
             this.btnDisconnect.Font = new System.Drawing.Font("MS UI Gothic", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnDisconnect.ForeColor = System.Drawing.Color.White;
             this.btnDisconnect.Location = new System.Drawing.Point(715, 3);
@@ -132,7 +133,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51936F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48064F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 284F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 286F));
             this.tableLayoutPanel1.Controls.Add(this.lblVersion, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblModelName, 0, 0);
@@ -148,9 +149,9 @@
             this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblVersion.Location = new System.Drawing.Point(204, 8);
+            this.lblVersion.Location = new System.Drawing.Point(203, 8);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(205, 19);
+            this.lblVersion.Size = new System.Drawing.Size(204, 19);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "Ver：----------";
             // 
@@ -159,9 +160,9 @@
             this.lblAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAddress.AutoSize = true;
             this.lblAddress.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblAddress.Location = new System.Drawing.Point(416, 8);
+            this.lblAddress.Location = new System.Drawing.Point(414, 8);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(279, 19);
+            this.lblAddress.Size = new System.Drawing.Size(281, 19);
             this.lblAddress.TabIndex = 1;
             this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
@@ -172,7 +173,7 @@
             this.lblModelName.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblModelName.Location = new System.Drawing.Point(4, 8);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(193, 19);
+            this.lblModelName.Size = new System.Drawing.Size(192, 19);
             this.lblModelName.TabIndex = 0;
             this.lblModelName.Text = "機種名：----------";
             // 
@@ -318,7 +319,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 91F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 93F));
             this.tableLayoutPanel3.Controls.Add(this.lblRate, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblNumNG, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblNumGood, 1, 0);
@@ -335,7 +336,7 @@
             this.lblRate.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblRate.AutoSize = true;
             this.lblRate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblRate.Location = new System.Drawing.Point(348, 15);
+            this.lblRate.Location = new System.Drawing.Point(347, 15);
             this.lblRate.Name = "lblRate";
             this.lblRate.Size = new System.Drawing.Size(43, 20);
             this.lblRate.TabIndex = 3;
@@ -347,7 +348,7 @@
             this.lblNumNG.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumNG.AutoSize = true;
             this.lblNumNG.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumNG.Location = new System.Drawing.Point(261, 15);
+            this.lblNumNG.Location = new System.Drawing.Point(259, 15);
             this.lblNumNG.Name = "lblNumNG";
             this.lblNumNG.Size = new System.Drawing.Size(19, 20);
             this.lblNumNG.TabIndex = 2;
@@ -359,7 +360,7 @@
             this.lblNumGood.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblNumGood.AutoSize = true;
             this.lblNumGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNumGood.Location = new System.Drawing.Point(154, 15);
+            this.lblNumGood.Location = new System.Drawing.Point(153, 15);
             this.lblNumGood.Name = "lblNumGood";
             this.lblNumGood.Size = new System.Drawing.Size(19, 20);
             this.lblNumGood.TabIndex = 1;
@@ -386,7 +387,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 91F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 93F));
             this.tableLayoutPanel2.Controls.Add(this.lblTitleRate, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblTitleNG, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblTitleGood, 1, 0);
@@ -404,7 +405,7 @@
             this.lblTitleRate.AutoSize = true;
             this.lblTitleRate.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblTitleRate.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.lblTitleRate.Location = new System.Drawing.Point(335, 17);
+            this.lblTitleRate.Location = new System.Drawing.Point(334, 17);
             this.lblTitleRate.Name = "lblTitleRate";
             this.lblTitleRate.Size = new System.Drawing.Size(69, 20);
             this.lblTitleRate.TabIndex = 3;
@@ -417,7 +418,7 @@
             this.lblTitleNG.AutoSize = true;
             this.lblTitleNG.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblTitleNG.ForeColor = System.Drawing.Color.DeepPink;
-            this.lblTitleNG.Location = new System.Drawing.Point(253, 17);
+            this.lblTitleNG.Location = new System.Drawing.Point(251, 17);
             this.lblTitleNG.Name = "lblTitleNG";
             this.lblTitleNG.Size = new System.Drawing.Size(36, 20);
             this.lblTitleNG.TabIndex = 2;
@@ -430,7 +431,7 @@
             this.lblTitleGood.AutoSize = true;
             this.lblTitleGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblTitleGood.ForeColor = System.Drawing.Color.MediumSeaGreen;
-            this.lblTitleGood.Location = new System.Drawing.Point(132, 17);
+            this.lblTitleGood.Location = new System.Drawing.Point(130, 17);
             this.lblTitleGood.Name = "lblTitleGood";
             this.lblTitleGood.Size = new System.Drawing.Size(64, 20);
             this.lblTitleGood.TabIndex = 1;
