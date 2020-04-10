@@ -33,6 +33,9 @@ namespace ProductProcessCheckApp
 
         private IniFile ini;
 
+        private int numGood    = 0;
+        private int numNotGood = 0;
+
         public FormMain()
         {
             InitializeComponent();
@@ -89,13 +92,16 @@ namespace ProductProcessCheckApp
 
         private async void btnNG_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("未対応", Constant.APP_NAME);
+            //MessageBox.Show("未対応", Constant.APP_NAME);
+            numNotGood++;
+            updateResultTable();
         }
 
         private void UpdateDeviceStatus(DeviceStatus status, String statusMessage = "", bool showDialog = true)
         {
             deviceStatus = status;
-            if(status == DeviceStatus.CONNECT_SUCCESS)
+            btnConnect.Enabled = true;
+            if (status == DeviceStatus.CONNECT_SUCCESS)
             {
                 btnConnect.Text = "START";
                 btnDisconnect.Enabled = true;
@@ -105,6 +111,7 @@ namespace ProductProcessCheckApp
             } else if (status == DeviceStatus.DETECT_VIBRATION_FINISH_OK)
             {
                 btnConnect.Text = "自動検査";
+                btnConnect.Enabled = false;
             } else if (status == DeviceStatus.NOT_CONNECT || status == DeviceStatus.CONNECT_FAILED)
             {
                 deviceStatus = DeviceStatus.NOT_CONNECT;
@@ -148,7 +155,18 @@ namespace ProductProcessCheckApp
             deviceList = new Dictionary<string, BluetoothLEDevice>();
 
             lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
+            btnDisconnect.Enabled = false;
             UpdateDeviceStatus(DeviceStatus.NOT_CONNECT);
+
+            //Reset all button
+            btnBattery.BackColor      = Color.White;
+            btnLED.BackColor          = Color.White;
+            btnVibration.BackColor    = Color.White;
+            btnMike.BackColor         = Color.White;
+            btnAcceleSensor.BackColor = Color.White;
+            btnWearSensor.BackColor   = Color.White;
+            btnEEPROM.BackColor       = Color.White;
+            btnFinish.BackColor       = Color.White;
         }
 
         private void LoadIniFile()
@@ -586,6 +604,177 @@ namespace ProductProcessCheckApp
             {
                 btnVibration.BackColor = Color.White; //Reset
                 UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
+                sendCommandDetectMikeStart();
+
+            }
+        }
+
+        private async void sendCommandDetectMikeStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectMike, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectMike, "マイク検査開始[0xA3]", commandData);
+            if (result)
+            {
+                btnMike.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
+                sendCommandSendBreathVolume();
+            }
+        }
+
+        private async void sendCommandSendBreathVolume()
+        {
+            byte[] commandData = new byte[] { Constant.CommandSendBreathVolume };
+
+            var result = await sendCommandAuto(Constant.CommandSendBreathVolume, "呼吸音送信[0xA7]", commandData);
+            if (result)
+            {
+                UpdateDeviceStatus(DeviceStatus.SEND_BREATH_VOLUME_OK);
+                sendCommandDetectMikeFinish();
+            }
+        }
+
+        private async void sendCommandDetectMikeFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectMike, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommandAuto(Constant.CommandDetectMike, "マイク検査終了[0xA3]", commandData);
+            if (result)
+            {
+                btnMike.BackColor = Color.White; //Reset
+                UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_FINISH_OK);
+                sendCommandDetectAcceleSensorStart();
+            }
+        }
+
+        private async void sendCommandDetectAcceleSensorStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectAcceleSensor, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectAcceleSensor, "加速度センサー検査開始[0xA4]", commandData);
+            if (result)
+            {
+                btnAcceleSensor.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_OK);
+                sendCommandSendAcceleSensor();
+            }
+        }
+
+        private async void sendCommandSendAcceleSensor()
+        {
+            //Will implement later (TMP)
+            byte x = 0; //加速度センサー（Ｘ）
+            byte y = 0; //加速度センサー（Ｙ）
+            byte z = 0; //加速度センサー（Ｚ）
+
+            byte[] commandData = new byte[] { Constant.CommandSendAcceleSensor, x, y, z };
+
+            var result = await sendCommandAuto(Constant.CommandSendAcceleSensor, "加速度センサー値送信[0xA8]", commandData);
+            if (result)
+            {
+                UpdateDeviceStatus(DeviceStatus.SEND_ACCELE_SENSOR_OK);
+                sendCommandDetectAcceleSensorFinish();
+            }
+        }
+
+        private async void sendCommandDetectAcceleSensorFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectAcceleSensor, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommandAuto(Constant.CommandDetectAcceleSensor, "加速度センサー検査終了[0xA4]", commandData);
+            if (result)
+            {
+                btnAcceleSensor.BackColor = Color.White; //Reset
+                UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_FINISH_OK);
+                sendCommandDetectWearSensorStart();
+            }
+        }
+
+        private async void sendCommandDetectWearSensorStart()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectWearSensor, (byte)CommandFlag.START };
+
+            var result = await sendCommandAuto(Constant.CommandDetectWearSensor, "装着センサー検査開始[0xA5]", commandData);
+            if (result)
+            {
+                btnWearSensor.BackColor = Color.Yellow;
+                UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_OK);
+                sendCommandSendWearSensor();
+            }
+        }
+
+        private async void sendCommandSendWearSensor()
+        {
+            byte[] commandData = new byte[] { Constant.CommandSendWearSensor };
+
+            var result = await sendCommandAuto(Constant.CommandSendWearSensor, "装着センサー値送信[0xA9]", commandData);
+            if (result)
+            {
+                UpdateDeviceStatus(DeviceStatus.SEND_WEAR_SENSOR_OK);
+                sendCommandDetectWearSensorFinish();
+            }
+        }
+
+        private async void sendCommandDetectWearSensorFinish()
+        {
+            byte[] commandData = new byte[] { Constant.CommandDetectWearSensor, (byte)CommandFlag.FINISH };
+
+            var result = await sendCommandAuto(Constant.CommandDetectWearSensor, "装着センサー検査終了[0xA5]", commandData);
+            if (result)
+            {
+                btnWearSensor.BackColor = Color.White; //Reset
+                UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_FINISH_OK);
+                sendCommandDetectEEPROMStart();
+            }
+        }
+
+        private async void sendCommandDetectEEPROMStart()
+        {
+            btnEEPROM.BackColor = Color.Yellow;
+            byte[] commandData = new byte[] { Constant.CommandDetectEEPROM };
+
+            var result = await sendCommandAuto(Constant.CommandDetectEEPROM, "EEPROM検査開始[0xA6]", commandData);
+            if (result)
+            {
+                btnEEPROM.BackColor = Color.White; //Reset
+                UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
+                sendCommandSendPowerSWOff();
+            }
+        }
+
+        private async void sendCommandSendPowerSWOff()
+        {
+            byte[] commandData = new byte[] { Constant.CommandSendPowerSWOff };
+
+            var result = await sendCommandAuto(Constant.CommandSendPowerSWOff, "電源SW OFF送信[0xF0]", commandData);
+            if (result)
+            {
+                UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
+                DisconnectDevice();
+
+                btnFinish.BackColor = Color.Yellow;
+
+                numGood++;
+                updateResultTable();
+
+                //Write log here
+            }
+        }
+
+        public void updateResultTable()
+        {
+            int numTotal = numGood + numNotGood;
+            lblNumGood.Text  = numGood.ToString();
+            lblNumNG.Text    = numNotGood.ToString();
+            lblNumTotal.Text = numNotGood.ToString();
+
+            if(numTotal > 0)
+            {
+                double ngRate = System.Math.Round((double)(numNotGood / numTotal * 100), 1);
+                lblRate.Text = $"{ngRate}%";
+            } else
+            {
+                lblRate.Text = "0.0%";
             }
         }
 
