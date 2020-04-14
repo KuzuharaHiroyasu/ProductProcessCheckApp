@@ -13,6 +13,7 @@ using Windows.Storage.Streams;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Security.Cryptography;
 using System.Drawing;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProductProcessCheckApp
 {
@@ -36,6 +37,14 @@ namespace ProductProcessCheckApp
         private int numGood    = 0;
         private int numNotGood = 0;
 
+        private const int GraphDataNum = 40 + 1;
+        Queue<double> MicDataRespQueue = new Queue<double>();
+        Queue<double> AclXDataRespQueue = new Queue<double>();
+        Queue<double> AclYDataRespQueue = new Queue<double>();
+        Queue<double> AclZDataRespQueue = new Queue<double>();
+        Queue<double> PhotoDataRespQueue = new Queue<double>();
+        object lockData = new object();
+
         public FormMain()
         {
             InitializeComponent();
@@ -43,9 +52,59 @@ namespace ProductProcessCheckApp
             CustomGUI();
 
             LoadIniFile();
+
+            initGraphShow();
         }
 
-        private async void btnConnect_Click(object sender, EventArgs e)
+        private void initGraphShow()
+        {
+            MicDataRespQueue.Clear();
+            AclXDataRespQueue.Clear();
+            AclYDataRespQueue.Clear();
+            AclZDataRespQueue.Clear();
+            PhotoDataRespQueue.Clear();
+
+            for (int i = 0; i < GraphDataNum; i++)
+            {
+                MicDataRespQueue.Enqueue(0);
+                AclXDataRespQueue.Enqueue(0);
+                AclYDataRespQueue.Enqueue(0);
+                AclZDataRespQueue.Enqueue(0);
+                PhotoDataRespQueue.Enqueue(0);
+            }
+
+            GraphUpdate_Apnea();
+        }
+
+        private void GraphUpdate_Apnea()
+        {
+            int cnt = 0;
+
+            lock (lockData)
+            {
+                Series srs_micresp = chart_mic.Series["マイク"];
+                Series srs_aclxresp = chart_acl.Series["X軸"];
+                Series srs_aclyresp = chart_acl.Series["Y軸"];
+                Series srs_aclzresp = chart_acl.Series["Z軸"];
+                Series srs_photoresp = chart_photo.Series["装着センサー"];
+                srs_micresp.Points.Clear();
+                srs_aclxresp.Points.Clear();
+                srs_aclyresp.Points.Clear();
+                srs_aclzresp.Points.Clear();
+                srs_photoresp.Points.Clear();
+                cnt = 0;
+                foreach (double data in MicDataRespQueue)
+                {
+                    srs_micresp.Points.AddXY(cnt, data);
+                    srs_aclxresp.Points.AddXY(cnt, data);
+                    srs_aclyresp.Points.AddXY(cnt, data);
+                    srs_aclzresp.Points.AddXY(cnt, data);
+                    srs_photoresp.Points.AddXY(cnt, data);
+                    cnt++;
+                }
+            }
+        }
+            private async void btnConnect_Click(object sender, EventArgs e)
         {
             if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
@@ -213,30 +272,33 @@ namespace ProductProcessCheckApp
             string address = args.BluetoothAddress.ToString("x");
             address = Utility.getFormatDeviceAddress(address);
 
-            var device = await SearchDevice(args);
-            if (device != null)
+            if (address.Contains("9F"))
             {
-                TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
-
-                //Step2: PairDevice
-                var message = "Sleeim[" + address + "]をペアリングしています";
-                lblStatus.Text = message;
-                await PairDevice(device);
-
-                //Step3: ConnectDevice
-                message = "Sleeim[" + address + "]を接続しています";
-                lblStatus.Text = message;
-                var isConnected = await ConnectDevice(device);
-                if (isConnected)
+                var device = await SearchDevice(args);
+                if (device != null)
                 {
-                    StopScanning();
+                    TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
 
-                    UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
-                    lblAddress.Text = "BDアドレス[" + address + "]";
-                }
-                else
-                {
-                    UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
+                    //Step2: PairDevice
+                    var message = "Sleeim[" + address + "]をペアリングしています";
+                    lblStatus.Text = message;
+                    await PairDevice(device);
+
+                    //Step3: ConnectDevice
+                    message = "Sleeim[" + address + "]を接続しています";
+                    lblStatus.Text = message;
+                    var isConnected = await ConnectDevice(device);
+                    if (isConnected)
+                    {
+                        StopScanning();
+
+                        UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
+                        lblAddress.Text = "BDアドレス[" + address + "]";
+                    }
+                    else
+                    {
+                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
+                    }
                 }
             }
         }
@@ -310,7 +372,7 @@ namespace ProductProcessCheckApp
             {
                 foreach (var service in gatt.Services)
                 {
-                    Debug.WriteLine($"Service: UUID {service.Uuid}, ShareMode {service.SharingMode}, DeviceId {service.DeviceId}");
+//                    Debug.WriteLine($"Service: UUID {service.Uuid}, ShareMode {service.SharingMode}, DeviceId {service.DeviceId}");
 
                     var charactersResult = await service.GetCharacteristicsAsync();
                     foreach (var chara in charactersResult.Characteristics)
@@ -463,6 +525,8 @@ namespace ProductProcessCheckApp
                         strData = strData + Convert.ToChar(data[i]);
                     }
                 }
+
+
 
                 Console.WriteLine("Data Received : " + strData);
             }
@@ -618,7 +682,9 @@ namespace ProductProcessCheckApp
             {
                 btnMike.BackColor = Color.Yellow;
                 UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
-                sendCommandSendBreathVolume();
+
+                await ReadValue();
+                //                sendCommandSendBreathVolume();
             }
         }
 
