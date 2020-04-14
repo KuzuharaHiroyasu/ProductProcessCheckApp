@@ -679,9 +679,7 @@ namespace ProductProcessCheckApp
             {
                 btnMike.BackColor = Color.Yellow;
                 UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
-
-                await ReadValue();
-                //                sendCommandSendBreathVolume();
+                sendCommandSendBreathVolume();
             }
         }
 
