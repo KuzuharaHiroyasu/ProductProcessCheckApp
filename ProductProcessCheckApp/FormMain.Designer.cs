@@ -80,6 +80,11 @@
             this.chart_mic = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart_acl = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart_photo = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.textBoxSerialStart = new System.Windows.Forms.TextBox();
+            this.textBoxSerialEnd = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel12.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -92,6 +97,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart_mic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_acl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_photo)).BeginInit();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -211,14 +217,14 @@
             this.panel2.Location = new System.Drawing.Point(9, 50);
             this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(166, 451);
+            this.panel2.Size = new System.Drawing.Size(166, 357);
             this.panel2.TabIndex = 1;
             // 
             // btnEEPROM
             // 
             this.btnEEPROM.BackColor = System.Drawing.Color.White;
             this.btnEEPROM.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnEEPROM.Location = new System.Drawing.Point(14, 349);
+            this.btnEEPROM.Location = new System.Drawing.Point(14, 272);
             this.btnEEPROM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnEEPROM.Name = "btnEEPROM";
             this.btnEEPROM.Size = new System.Drawing.Size(141, 34);
@@ -231,7 +237,7 @@
             // 
             this.btnFinish.BackColor = System.Drawing.Color.White;
             this.btnFinish.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnFinish.Location = new System.Drawing.Point(14, 402);
+            this.btnFinish.Location = new System.Drawing.Point(14, 310);
             this.btnFinish.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnFinish.Name = "btnFinish";
             this.btnFinish.Size = new System.Drawing.Size(141, 34);
@@ -243,7 +249,7 @@
             // 
             this.btnAcceleSensor.BackColor = System.Drawing.Color.White;
             this.btnAcceleSensor.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnAcceleSensor.Location = new System.Drawing.Point(14, 252);
+            this.btnAcceleSensor.Location = new System.Drawing.Point(14, 196);
             this.btnAcceleSensor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAcceleSensor.Name = "btnAcceleSensor";
             this.btnAcceleSensor.Size = new System.Drawing.Size(141, 34);
@@ -256,7 +262,7 @@
             // 
             this.btnMike.BackColor = System.Drawing.Color.White;
             this.btnMike.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnMike.Location = new System.Drawing.Point(14, 203);
+            this.btnMike.Location = new System.Drawing.Point(14, 158);
             this.btnMike.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnMike.Name = "btnMike";
             this.btnMike.Size = new System.Drawing.Size(141, 34);
@@ -269,7 +275,7 @@
             // 
             this.btnWearSensor.BackColor = System.Drawing.Color.White;
             this.btnWearSensor.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnWearSensor.Location = new System.Drawing.Point(14, 304);
+            this.btnWearSensor.Location = new System.Drawing.Point(14, 234);
             this.btnWearSensor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnWearSensor.Name = "btnWearSensor";
             this.btnWearSensor.Size = new System.Drawing.Size(141, 34);
@@ -282,7 +288,7 @@
             // 
             this.btnVibration.BackColor = System.Drawing.Color.White;
             this.btnVibration.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnVibration.Location = new System.Drawing.Point(14, 156);
+            this.btnVibration.Location = new System.Drawing.Point(14, 120);
             this.btnVibration.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnVibration.Name = "btnVibration";
             this.btnVibration.Size = new System.Drawing.Size(141, 34);
@@ -295,7 +301,7 @@
             // 
             this.btnLED.BackColor = System.Drawing.Color.White;
             this.btnLED.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnLED.Location = new System.Drawing.Point(14, 107);
+            this.btnLED.Location = new System.Drawing.Point(14, 82);
             this.btnLED.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLED.Name = "btnLED";
             this.btnLED.Size = new System.Drawing.Size(141, 34);
@@ -309,7 +315,7 @@
             this.btnBattery.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnBattery.BackColor = System.Drawing.Color.White;
             this.btnBattery.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBattery.Location = new System.Drawing.Point(14, 58);
+            this.btnBattery.Location = new System.Drawing.Point(14, 44);
             this.btnBattery.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnBattery.Name = "btnBattery";
             this.btnBattery.Size = new System.Drawing.Size(141, 34);
@@ -322,7 +328,7 @@
             // 
             this.btnInspectTitle.BackColor = System.Drawing.Color.White;
             this.btnInspectTitle.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnInspectTitle.Location = new System.Drawing.Point(14, 11);
+            this.btnInspectTitle.Location = new System.Drawing.Point(14, 6);
             this.btnInspectTitle.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnInspectTitle.Name = "btnInspectTitle";
             this.btnInspectTitle.Size = new System.Drawing.Size(141, 34);
@@ -469,12 +475,12 @@
             this.lblTitleGood.AutoSize = true;
             this.lblTitleGood.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblTitleGood.ForeColor = System.Drawing.Color.MediumSeaGreen;
-            this.lblTitleGood.Location = new System.Drawing.Point(95, 13);
+            this.lblTitleGood.Location = new System.Drawing.Point(106, 13);
             this.lblTitleGood.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleGood.Name = "lblTitleGood";
-            this.lblTitleGood.Size = new System.Drawing.Size(51, 16);
+            this.lblTitleGood.Size = new System.Drawing.Size(29, 16);
             this.lblTitleGood.TabIndex = 1;
-            this.lblTitleGood.Text = "GOOD";
+            this.lblTitleGood.Text = "OK";
             this.lblTitleGood.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
@@ -653,11 +659,56 @@
             title3.Text = "装着センサー";
             this.chart_photo.Titles.Add(title3);
             // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Controls.Add(this.label3);
+            this.panel4.Controls.Add(this.label2);
+            this.panel4.Controls.Add(this.textBoxSerialEnd);
+            this.panel4.Controls.Add(this.textBoxSerialStart);
+            this.panel4.Location = new System.Drawing.Point(8, 424);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(167, 100);
+            this.panel4.TabIndex = 11;
+            // 
+            // textBoxSerialStart
+            // 
+            this.textBoxSerialStart.Location = new System.Drawing.Point(7, 29);
+            this.textBoxSerialStart.Name = "textBoxSerialStart";
+            this.textBoxSerialStart.Size = new System.Drawing.Size(149, 19);
+            this.textBoxSerialStart.TabIndex = 0;
+            // 
+            // textBoxSerialEnd
+            // 
+            this.textBoxSerialEnd.Location = new System.Drawing.Point(7, 76);
+            this.textBoxSerialEnd.Name = "textBoxSerialEnd";
+            this.textBoxSerialEnd.Size = new System.Drawing.Size(149, 19);
+            this.textBoxSerialEnd.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(5, 14);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(104, 12);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "開始シリアルナンバー";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(5, 61);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(104, 12);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "終了シリアルナンバー";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 540);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.chart_photo);
             this.Controls.Add(this.chart_acl);
             this.Controls.Add(this.chart_mic);
@@ -686,6 +737,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart_mic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_acl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_photo)).EndInit();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -730,6 +783,11 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_mic;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_acl;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_photo;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxSerialEnd;
+        private System.Windows.Forms.TextBox textBoxSerialStart;
     }
 }
 
