@@ -272,33 +272,30 @@ namespace ProductProcessCheckApp
             string address = args.BluetoothAddress.ToString("x");
             address = Utility.getFormatDeviceAddress(address);
 
-            if (address.Contains("9F"))
+            var device = await SearchDevice(args);
+            if (device != null)
             {
-                var device = await SearchDevice(args);
-                if (device != null)
+                TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
+
+                //Step2: PairDevice
+                var message = "Sleeim[" + address + "]をペアリングしています";
+                lblStatus.Text = message;
+                await PairDevice(device);
+
+                //Step3: ConnectDevice
+                message = "Sleeim[" + address + "]を接続しています";
+                lblStatus.Text = message;
+                var isConnected = await ConnectDevice(device);
+                if (isConnected)
                 {
-                    TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
+                    StopScanning();
 
-                    //Step2: PairDevice
-                    var message = "Sleeim[" + address + "]をペアリングしています";
-                    lblStatus.Text = message;
-                    await PairDevice(device);
-
-                    //Step3: ConnectDevice
-                    message = "Sleeim[" + address + "]を接続しています";
-                    lblStatus.Text = message;
-                    var isConnected = await ConnectDevice(device);
-                    if (isConnected)
-                    {
-                        StopScanning();
-
-                        UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
-                        lblAddress.Text = "BDアドレス[" + address + "]";
-                    }
-                    else
-                    {
-                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
-                    }
+                    UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
+                    lblAddress.Text = "BDアドレス[" + address + "]";
+                }
+                else
+                {
+                    UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
                 }
             }
         }
