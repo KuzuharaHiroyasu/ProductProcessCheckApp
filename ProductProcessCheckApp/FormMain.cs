@@ -23,8 +23,9 @@ namespace ProductProcessCheckApp
         public DeviceWatcher deviceWatcher;
         public GattDeviceService gattService;
         public GattCharacteristic readCharacteristic, writeCharacteristic;
+        public BluetoothLEDevice bleDevice;
 
-        public List<GattCharacteristic> characteristicList = new List<GattCharacteristic>();
+        //public List<GattCharacteristic> characteristicList = new List<GattCharacteristic>();
 
         public Dictionary<string, BluetoothLEDevice> deviceList = new Dictionary<string, BluetoothLEDevice>();
 
@@ -108,7 +109,7 @@ namespace ProductProcessCheckApp
         {
             if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
-                DisconnectDevice();
+                DisconnectDevice(false);
 
                 SetupSearchTimeOut();
                 SetupBluetooth();
@@ -144,7 +145,7 @@ namespace ProductProcessCheckApp
             var message = gattService == null ? Constant.MSG_SLEEIM_IS_NOT_CONNECTING : Constant.MSG_SLEEIM_DISCONNECTED;
             lblStatus.Text = message;
 
-            DisconnectDevice();
+            DisconnectDevice(false);
             
             MessageBox.Show(message, Constant.APP_NAME);
         }
@@ -202,13 +203,20 @@ namespace ProductProcessCheckApp
             StartScanning();
         }
 
-        private void DisconnectDevice()
+        private async void DisconnectDevice(bool isFinish)
         {
             if (gattService != null)
             {
                 gattService.Dispose();
             }
+            if (bleDevice != null)
+            {
+                await bleDevice.DeviceInformation.Pairing.UnpairAsync();
+                bleDevice.Dispose();
+            }
+
             gattService = null;
+            bleDevice = null;
             readCharacteristic = null;
             writeCharacteristic = null;
             deviceList = new Dictionary<string, BluetoothLEDevice>();
@@ -225,7 +233,10 @@ namespace ProductProcessCheckApp
             btnAcceleSensor.BackColor = Color.White;
             btnWearSensor.BackColor   = Color.White;
             btnEEPROM.BackColor       = Color.White;
-            btnFinish.BackColor       = Color.White;
+            if(!isFinish)
+            {
+                btnFinish.BackColor = Color.White;
+            }
         }
 
         private void LoadIniFile()
@@ -292,6 +303,8 @@ namespace ProductProcessCheckApp
 
                     UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
                     lblAddress.Text = "BDアドレス[" + address + "]";
+
+                    bleDevice = device;
                 }
                 else
                 {
@@ -374,7 +387,7 @@ namespace ProductProcessCheckApp
                     var charactersResult = await service.GetCharacteristicsAsync();
                     foreach (var chara in charactersResult.Characteristics)
                     {
-                        characteristicList.Add(chara);
+                        //characteristicList.Add(chara);
                         Debug.WriteLine($"Characteristic UUID {chara.Uuid}, Permission:{chara.CharacteristicProperties}");
                     }
 
@@ -392,12 +405,16 @@ namespace ProductProcessCheckApp
                         {
                             Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
                             readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
+                            
+                            var charResult = await readCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                         }
 
                         if (writeCharacteristic != null)
                         {
                             Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
                             writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
+                            
+                            var charResult = await writeCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
 
                             return true;
                         }
@@ -811,7 +828,7 @@ namespace ProductProcessCheckApp
             if (result)
             {
                 UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
-                DisconnectDevice();
+                DisconnectDevice(true);
 
                 btnFinish.BackColor = Color.Yellow;
 
