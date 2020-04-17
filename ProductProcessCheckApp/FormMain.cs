@@ -359,18 +359,37 @@ namespace ProductProcessCheckApp
 
         private async Task<Boolean> PairDevice(BluetoothLEDevice device)
         {
-            DevicePairingResult result = await device.DeviceInformation.Pairing.PairAsync(DevicePairingProtectionLevel.None);
-            if (result != null)
+            if (!device.DeviceInformation.Pairing.CanPair)
             {
-                Debug.WriteLine($"Pairing Result: {result.Status}");
-                if (result.Status == DevicePairingResultStatus.Paired || result.Status == DevicePairingResultStatus.AlreadyPaired)
+                Debug.WriteLine("Can Not Pair", Constant.APP_NAME);
+            }
+            else if (device.DeviceInformation.Pairing.IsPaired)
+            {
+                Debug.WriteLine("Is Paired");
+                return true;
+            } else {
+                device.DeviceInformation.Pairing.Custom.PairingRequested += CustomOnPairingRequested;
+                var result = await device.DeviceInformation.Pairing.Custom.PairAsync(DevicePairingKinds.ConfirmOnly, DevicePairingProtectionLevel.None);
+                device.DeviceInformation.Pairing.Custom.PairingRequested -= CustomOnPairingRequested;
+
+                //DevicePairingResult result = await device.DeviceInformation.Pairing.PairAsync(DevicePairingProtectionLevel.None);
+                if (result != null)
                 {
-                    Debug.WriteLine("Paired OK");
-                    return true;
+                    Debug.WriteLine($"Pairing Result: {result.Status}");
+                    if (result.Status == DevicePairingResultStatus.Paired || result.Status == DevicePairingResultStatus.AlreadyPaired)
+                    {
+                        Debug.WriteLine("Paired OK");
+                        return true;
+                    }
                 }
             }
 
             return false;
+        }
+
+        private void CustomOnPairingRequested(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
+        {
+            args.Accept();
         }
 
         private async Task<bool> ConnectDevice(BluetoothLEDevice device)
@@ -679,7 +698,6 @@ namespace ProductProcessCheckApp
                 btnVibration.BackColor = Color.White; //Reset
                 UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
                 sendCommandDetectMikeStart();
-
             }
         }
 
