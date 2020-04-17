@@ -12,9 +12,9 @@ namespace ProductProcessCheckApp
         public static readonly byte CommandDetectAcceleSensor = 0xA4; //加速度センサー検査
         public static readonly byte CommandDetectWearSensor   = 0xA5; //装着センサー検査
         public static readonly byte CommandDetectEEPROM       = 0xA6; //EEPROM
-        public static readonly byte CommandSendBreathVolume   = 0xA7; //呼吸音送信
-        public static readonly byte CommandSendAcceleSensor   = 0xA8; //加速度センサー値送信
-        public static readonly byte CommandSendWearSensor     = 0xA9; //装着センサー値送信
+        public static readonly byte CommandSendBreathVolume   = 0xA7; //呼吸音送信 (G1D→PC)
+        public static readonly byte CommandSendAcceleSensor   = 0xA8; //加速度センサー値送信 (G1D→PC)
+        public static readonly byte CommandSendWearSensor     = 0xA9; //装着センサー値送信 (G1D→PC)
         public static readonly byte CommandSendPowerSWOff     = 0xF0; //電源SW OFF送信
 
         //Service：Declaration

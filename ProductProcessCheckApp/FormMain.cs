@@ -404,17 +404,24 @@ namespace ProductProcessCheckApp
                         if (readCharacteristic != null)
                         {
                             Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
-                            readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
-                            
                             var charResult = await readCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                            readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
                         }
 
                         if (writeCharacteristic != null)
                         {
                             Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
-                            writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
                             
+                            //Try to register Notify to notify when characteristic changed
                             var charResult = await writeCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                            var currentDescriptorValue = await writeCharacteristic.ReadClientCharacteristicConfigurationDescriptorAsync();
+                            if (currentDescriptorValue.ClientCharacteristicConfigurationDescriptor != GattClientCharacteristicConfigurationDescriptorValue.Notify) {
+                                MessageBox.Show($"Write Characteristic: {Utility.GetUUIDString(writeCharacteristic.Uuid)} Not Support WriteCharacteristic_ValueChanged", Constant.APP_NAME);
+                            }
+
+                            writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
 
                             return true;
                         }
@@ -520,30 +527,19 @@ namespace ProductProcessCheckApp
             return CommandResult.UNKNOW_ERROR;
         }
 
-        public async Task ReadValue()
+        public async Task<byte[]> ReadValue()
         {
-            GattReadResult result = await readCharacteristic.ReadValueAsync(BluetoothCacheMode.Uncached);
+            byte[] data = null; 
+
+            GattReadResult result = await writeCharacteristic.ReadValueAsync();
             if (result.Status == GattCommunicationStatus.Success)
             {
                 var RawBufLen = (int)result.Value.Length;
-                byte[] data;
-                string strData = null;
 
                 CryptographicBuffer.CopyToByteArray(result.Value, out data);
-                //byte[] bytes = WindowsRuntimeBufferExtensions.ToArray(result.Value, 0, (int)result.Value.Length);
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (Convert.ToChar(data[i]) != '\0')
-                    {
-                        strData = strData + Convert.ToChar(data[i]);
-                    }
-                }
-
-
-
-                Console.WriteLine("Data Received : " + strData);
             }
+
+            return data;
         }
 
         private async Task SendValues(byte[] toSend)
