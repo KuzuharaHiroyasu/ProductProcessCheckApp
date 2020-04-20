@@ -38,6 +38,8 @@ namespace ProductProcessCheckApp
         private int numGood    = 0;
         private int numNotGood = 0;
 
+        private int numGoodCheck1 = 0;
+
         private const int GraphDataNum = 40 + 1;
         Queue<double> MicDataRespQueue = new Queue<double>();
         Queue<double> AclXDataRespQueue = new Queue<double>();
@@ -152,6 +154,9 @@ namespace ProductProcessCheckApp
 
         private async void btnNG_Click(object sender, EventArgs e)
         {
+            lblCheckResult.Text = "NG";
+            lblCheckResult.ForeColor = Color.Red;
+
             //MessageBox.Show("未対応", Constant.APP_NAME);
             numNotGood++;
             updateResultTable();
@@ -269,7 +274,7 @@ namespace ProductProcessCheckApp
             lblTitleRate.ForeColor = ColorTranslator.FromHtml("#246794");
 
             this.Text = Constant.APP_NAME;
-            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            this.lblCurrentDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
 
             Timer dateTimer = new Timer();
             dateTimer.Interval = 10 * 1000; //秒で計算
@@ -640,6 +645,7 @@ namespace ProductProcessCheckApp
         //[OK(手動)]ボタンクリック
         private async void sendCommandDetectBatteryFinish()
         {
+            int okNum;
             byte[] commandData = new byte[] { Constant.CommandDetectBattery, (byte)CommandFlag.FINISH };
 
             var result = await sendCommand(Constant.CommandDetectBattery, "充電検査終了[0xA0]", commandData);
@@ -648,6 +654,8 @@ namespace ProductProcessCheckApp
                 btnBattery.BackColor = Color.White; //Reset
                 sendCommandDetectLEDStart();
             }
+            okNum = Convert.ToInt32(lblNumCheckBatteryOK.Text) + 1;
+            lblNumCheckBatteryOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectLEDStart()
@@ -665,6 +673,7 @@ namespace ProductProcessCheckApp
         //[OK(手動)]ボタンクリック
         private async void sendCommandDetectLEDFinish()
         {
+            int okNum;
             byte[] commandData = new byte[] { Constant.CommandDetectLED, (byte)CommandFlag.FINISH };
 
             var result = await sendCommand(Constant.CommandDetectLED, "LED検査終了[0xA1]", commandData);
@@ -673,6 +682,8 @@ namespace ProductProcessCheckApp
                 btnLED.BackColor = Color.White; //Reset
                 sendCommandDetectVibrationStart();
             }
+            okNum = Convert.ToInt32(lblNumCheckLedOK.Text) + 1;
+            lblNumCheckLedOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectVibrationStart()
@@ -690,6 +701,7 @@ namespace ProductProcessCheckApp
         //[OK(手動)]ボタンクリック
         private async void sendCommandDetectVibrationFinish()
         {
+            int okNum;
             byte[] commandData = new byte[] { Constant.CommandDetectVibration, (byte)CommandFlag.FINISH };
 
             var result = await sendCommand(Constant.CommandDetectVibration, "バイブレーション検査終了[0xA2]", commandData);
@@ -699,6 +711,8 @@ namespace ProductProcessCheckApp
                 UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
                 sendCommandDetectMikeStart();
             }
+            okNum = Convert.ToInt32(lblNumCheckVibOK.Text) + 1;
+            lblNumCheckVibOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectMikeStart()
@@ -848,7 +862,7 @@ namespace ProductProcessCheckApp
 
                 numGood++;
                 updateResultTable();
-
+                lblCheckResult.Text = "OK";
                 //Write log here
             }
         }
