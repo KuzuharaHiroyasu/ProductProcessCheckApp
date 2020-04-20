@@ -301,17 +301,28 @@ namespace ProductProcessCheckApp
                 //Step3: ConnectDevice
                 message = "Sleeim[" + address + "]を接続しています";
                 lblStatus.Text = message;
-                var isConnected = await ConnectDevice(device);
-                if (isConnected)
+
+                try
                 {
-                    StopScanning();
+                    var isConnected = await ConnectDevice(device);
+                    if (isConnected)
+                    {
+                        StopScanning();
 
-                    UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
-                    lblAddress.Text = "BDアドレス[" + address + "]";
+                        UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました", false);
+                        lblAddress.Text = "BDアドレス[" + address + "]";
 
-                    bleDevice = device;
-                }
-                else
+                        bleDevice = device;
+                        startedFlag = false;
+
+                        //RegisterNotificationWhenValueChanged(readCharacteristic);
+                        RegisterNotificationWhenValueChanged(writeCharacteristic);
+                    }
+                    else
+                    {
+                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
+                    }
+                } catch(Exception e)
                 {
                     UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました", false);
                 }
@@ -406,8 +417,6 @@ namespace ProductProcessCheckApp
             {
                 foreach (var service in gatt.Services)
                 {
-//                    Debug.WriteLine($"Service: UUID {service.Uuid}, ShareMode {service.SharingMode}, DeviceId {service.DeviceId}");
-
                     var charactersResult = await service.GetCharacteristicsAsync();
                     foreach (var chara in charactersResult.Characteristics)
                     {
@@ -436,17 +445,6 @@ namespace ProductProcessCheckApp
                         if (writeCharacteristic != null)
                         {
                             Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
-                            
-                            //Try to register Notify to notify when characteristic changed
-                            var charResult = await writeCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-
-                            var currentDescriptorValue = await writeCharacteristic.ReadClientCharacteristicConfigurationDescriptorAsync();
-                            if (currentDescriptorValue.ClientCharacteristicConfigurationDescriptor != GattClientCharacteristicConfigurationDescriptorValue.Notify) {
-                                MessageBox.Show($"Write Characteristic: {Utility.GetUUIDString(writeCharacteristic.Uuid)} Not Support WriteCharacteristic_ValueChanged", Constant.APP_NAME);
-                            }
-
-                            writeCharacteristic.ValueChanged += WriteCharacteristic_ValueChanged;
-
                             return true;
                         }
                     }
@@ -531,7 +529,6 @@ namespace ProductProcessCheckApp
                     }
                     else if (result == GattCommunicationStatus.Success)
                     {
-                        //readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
                         //MessageBox.Show("Command Write Successfully");
                         return CommandResult.SUCCESS;
                     }
@@ -551,16 +548,19 @@ namespace ProductProcessCheckApp
             return CommandResult.UNKNOW_ERROR;
         }
 
-        public async Task<byte[]> ReadValue()
+        public async Task<byte[]> ReadValue(GattCharacteristic characteristic)
         {
             byte[] data = null; 
 
-            GattReadResult result = await writeCharacteristic.ReadValueAsync();
-            if (result.Status == GattCommunicationStatus.Success)
+            if(characteristic != null)
             {
-                var RawBufLen = (int)result.Value.Length;
+                GattReadResult result = await characteristic.ReadValueAsync();
+                if (result.Status == GattCommunicationStatus.Success)
+                {
+                    var RawBufLen = (int)result.Value.Length;
 
-                CryptographicBuffer.CopyToByteArray(result.Value, out data);
+                    CryptographicBuffer.CopyToByteArray(result.Value, out data);
+                }
             }
 
             return data;
@@ -599,11 +599,17 @@ namespace ProductProcessCheckApp
         private void WriteCharacteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             Debug.WriteLine("WriteCharacteristic_ValueChanged Here");
+            byte[] data = new byte[args.CharacteristicValue.Length];
+            DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
+
+            //Do something
         }
 
         private static void ReadCharacteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             Debug.WriteLine("ReadCharacteristic_ValueChanged Here");
+            byte[] data = new byte[args.CharacteristicValue.Length];
+            DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
         }
 
         private async void DeviceAdded(DeviceWatcher watcher, DeviceInformation device)
@@ -940,6 +946,39 @@ namespace ProductProcessCheckApp
             }
 
             return false;
+        }
+
+        public async void RegisterNotificationWhenValueChanged(GattCharacteristic chara)
+        {
+            GattCharacteristicProperties properties = chara.CharacteristicProperties;
+
+            var configDesValue = GattClientCharacteristicConfigurationDescriptorValue.None;
+            if (properties.HasFlag(GattCharacteristicProperties.Indicate))
+            {
+                configDesValue = GattClientCharacteristicConfigurationDescriptorValue.Indicate;
+            } else if (properties.HasFlag(GattCharacteristicProperties.Notify)) {
+                configDesValue = GattClientCharacteristicConfigurationDescriptorValue.Notify;
+            }
+
+            try
+            {
+                // Write the ClientCharacteristicConfigurationDescriptor in order for server to send notifications
+                GattWriteResult status = await chara.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(configDesValue);
+                var result = await chara.WriteClientCharacteristicConfigurationDescriptorAsync(configDesValue);
+                if (result == GattCommunicationStatus.Success)
+                {
+                    chara.ValueChanged += WriteCharacteristic_ValueChanged;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            var currentDesValue = await chara.ReadClientCharacteristicConfigurationDescriptorAsync();
+            if (currentDesValue.ClientCharacteristicConfigurationDescriptor != GattClientCharacteristicConfigurationDescriptorValue.Notify)
+            {
+                MessageBox.Show($"Characteristic: {Utility.GetUUIDString(chara.Uuid)} Not Support Method ValueChanged", Constant.APP_NAME);
+            }
         }
     }
 }
