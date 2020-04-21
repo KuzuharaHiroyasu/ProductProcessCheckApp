@@ -12,9 +12,9 @@ namespace ProductProcessCheckApp
         public static readonly byte CommandDetectAcceleSensor = 0xA4; //加速度センサー検査
         public static readonly byte CommandDetectWearSensor   = 0xA5; //装着センサー検査
         public static readonly byte CommandDetectEEPROM       = 0xA6; //EEPROM
-        public static readonly byte CommandSendBreathVolume   = 0xA7; //呼吸音送信 (G1D→PC)
-        public static readonly byte CommandSendAcceleSensor   = 0xA8; //加速度センサー値送信 (G1D→PC)
-        public static readonly byte CommandSendWearSensor     = 0xA9; //装着センサー値送信 (G1D→PC)
+        public static readonly byte CommandReceiveBreathVolume= 0xA7; //呼吸音送信 (G1D→PC)
+        public static readonly byte CommandReceiveAcceleSensor= 0xA8; //加速度センサー値送信 (G1D→PC)
+        public static readonly byte CommandReceiveWearSensor  = 0xA9; //装着センサー値送信 (G1D→PC)
         public static readonly byte CommandSendPowerSWOff     = 0xF0; //電源SW OFF送信
 
         //Service：Declaration
@@ -30,6 +30,7 @@ namespace ProductProcessCheckApp
         public static readonly String UUID_CHAR_READ1              = "00002a04-0000-1000-8000-00805f9b34fb"; //Permission: Read
         public static readonly String UUID_CHAR_READ_WRITE1        = "00002a00-0000-1000-8000-00805f9b34fb"; //Permission: Read, Write
         public static readonly String UUID_CHAR_READ_WRITE2        = "00002a01-0000-1000-8000-00805f9b34fb"; //Permission: Read, Write
+        public static readonly String ANDROID_CENTRAL_UUID         = "00002902-0000-1000-8000-00805f9b34fb";
 
 
         public static String UUID_SERVICE    = UUID_SERVICE_DECLARATION;
@@ -67,13 +68,13 @@ namespace ProductProcessCheckApp
         DETECT_VIBRATION_OK        = 6,  //[バイブレーション検査開始コマンド送信後]ステータス
         DETECT_VIBRATION_FINISH_OK = 7,  //[バイブレーション検査終了コマンド送信後]ステータス
         DETECT_MIKE_OK             = 8,  //[マイク検査開始コマンド送信後]ステータス
-        SEND_BREATH_VOLUME_OK      = 9,  //[呼吸音送信コマンド送信後]ステータス
+        RECEIVE_BREATH_VOLUME_OK   = 9,  //デバイスから[呼吸音送信コマンド受信後]ステータス
         DETECT_MIKE_FINISH_OK      = 10, //[マイク検査終了コマンド送信後]ステータス
         DETECT_ACCELE_SENSOR_OK        = 11, //[加速度センサー検査開始コマンド送信後]ステータス
-        SEND_ACCELE_SENSOR_OK          = 12, //[加速度センサー値送信コマンド送信後]ステータス
+        RECEIVE_ACCELE_SENSOR_OK       = 12, //デバイスから[加速度センサー値送信コマンド受信後]ステータス
         DETECT_ACCELE_SENSOR_FINISH_OK = 13, //[加速度センサー検査終了コマンド送信後]ステータス
         DETECT_WEAR_SENSOR_OK          = 14, //[装着センサー検査開始コマンド送信後]ステータス
-        SEND_WEAR_SENSOR_OK            = 15, //[装着センサー値送信コマンド送信後]ステータス
+        RECEIVE_WEAR_SENSOR_OK         = 15, //デバイスから[装着センサー値送信コマンド受信後]ステータス
         DETECT_WEAR_SENSOR_FINISH_OK   = 16, //[装着センサー検査終了コマンド送信後]ステータス
         DETECT_EEPROM_OK               = 17, //[EEPROM検査開始コマンド送信後]ステータス
         SEND_POWER_OFF_OK              = 18, //["電源SW OFF送信コマンド送信後]ステータス

@@ -133,7 +133,6 @@ namespace ProductProcessCheckApp
             {
                 //[OK(手動)]ボタンクリック
                 sendCommandDetectVibrationFinish();
-                //MessageBox.Show("未対応", Constant.APP_NAME);
             }
         }
 
@@ -241,6 +240,7 @@ namespace ProductProcessCheckApp
             if(!isFinish)
             {
                 btnFinish.BackColor = Color.White;
+                lblCheckResult.Text = "";
             }
         }
 
@@ -625,26 +625,41 @@ namespace ProductProcessCheckApp
         //[START]ボタンクリック
         private async void sendCommandStatusChange()
         {
-            int commandStatus = 6; //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
-            byte[] commandData = new byte[] { Constant.CommandStatusChange, (byte)commandStatus };
+            byte commandCode = Constant.CommandStatusChange;
+            byte commandStatus = 6; //状態 (0:待機状態, 3:GET状態, 4:SET状態(デバッグ機能), 5:プログラム更新状態(G1D), 6:生産工程検査)
+            string commandName = "状態変更コマンド[0xB0]";
 
-            var result = await sendCommand(Constant.CommandStatusChange, "状態変更コマンド[0xB0]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommand(commandCode, commandName, commandData);
             if(result)
             {
-                UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
-                sendCommandDetectBatteryStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
+                    sendCommandDetectBatteryStart();
+                }
             }
         }
 
         private async void sendCommandDetectBatteryStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectBattery, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectBattery;
+            byte commandStatus = (byte)CommandFlag.START; 
+            string commandName = "充電検査開始[0xA0]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectBattery, "充電検査開始[0xA0]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnBattery.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_BATTERY_OK);
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnBattery.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_BATTERY_OK);
+                }  
             }
         }
 
@@ -652,27 +667,44 @@ namespace ProductProcessCheckApp
         private async void sendCommandDetectBatteryFinish()
         {
             int okNum;
-            byte[] commandData = new byte[] { Constant.CommandDetectBattery, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectBattery;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "充電検査終了[0xA0]";
 
-            var result = await sendCommand(Constant.CommandDetectBattery, "充電検査終了[0xA0]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommand(commandCode, commandName, commandData);
             if (result)
             {
-                btnBattery.BackColor = Color.White; //Reset
-                sendCommandDetectLEDStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnBattery.BackColor = Color.White; //Reset
+                    sendCommandDetectLEDStart();
+                }
             }
+
             okNum = Convert.ToInt32(lblNumCheckBatteryOK.Text) + 1;
             lblNumCheckBatteryOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectLEDStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectLED, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectLED;
+            byte commandStatus = (byte)CommandFlag.START;
+            string commandName = "LED検査開始[0xA1]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectLED, "LED検査開始[0xA1]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnLED.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_LED_OK);
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnLED.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_LED_OK);
+                }
             }
         }
 
@@ -680,27 +712,44 @@ namespace ProductProcessCheckApp
         private async void sendCommandDetectLEDFinish()
         {
             int okNum;
-            byte[] commandData = new byte[] { Constant.CommandDetectLED, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectLED;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "LED検査終了[0xA1]";
 
-            var result = await sendCommand(Constant.CommandDetectLED, "LED検査終了[0xA1]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommand(commandCode, commandName, commandData);
             if (result)
             {
-                btnLED.BackColor = Color.White; //Reset
-                sendCommandDetectVibrationStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnLED.BackColor = Color.White; //Reset
+                    sendCommandDetectVibrationStart();
+                }
             }
+
             okNum = Convert.ToInt32(lblNumCheckLedOK.Text) + 1;
             lblNumCheckLedOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectVibrationStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectVibration, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectVibration;
+            byte commandStatus = (byte)CommandFlag.START;
+            string commandName = "バイブレーション検査開始[0xA2]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectVibration, "バイブレーション検査開始[0xA2]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnVibration.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_OK);
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnVibration.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_OK);
+                }
             }
         }
 
@@ -708,168 +757,227 @@ namespace ProductProcessCheckApp
         private async void sendCommandDetectVibrationFinish()
         {
             int okNum;
-            byte[] commandData = new byte[] { Constant.CommandDetectVibration, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectVibration;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "バイブレーション検査終了[0xA2]";
 
-            var result = await sendCommand(Constant.CommandDetectVibration, "バイブレーション検査終了[0xA2]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommand(commandCode, commandName, commandData);
             if (result)
             {
-                btnVibration.BackColor = Color.White; //Reset
-                UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
-                sendCommandDetectMikeStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnVibration.BackColor = Color.White; //Reset
+                    UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
+                    sendCommandDetectMikeStart();
+                } 
             }
+
             okNum = Convert.ToInt32(lblNumCheckVibOK.Text) + 1;
             lblNumCheckVibOK.Text = okNum.ToString();
         }
 
         private async void sendCommandDetectMikeStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectMike, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectMike;
+            byte commandStatus = (byte)CommandFlag.START;
+            string commandName = "マイク検査開始[0xA3]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectMike, "マイク検査開始[0xA3]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnMike.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
-                sendCommandSendBreathVolume();
-            }
-        }
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnMike.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
 
-        private async void sendCommandSendBreathVolume()
-        {
-            byte[] commandData = new byte[] { Constant.CommandSendBreathVolume };
+                    byte[] receiveData = await getDataFromDevice(Constant.CommandReceiveBreathVolume, "呼吸音送信[0xA7]");
+                    if(receiveData != null && receiveData.Length >= 1 && receiveData[0] == Constant.CommandReceiveBreathVolume)
+                    {
+                        //呼吸音判定の処理
 
-            var result = await sendCommandAuto(Constant.CommandSendBreathVolume, "呼吸音送信[0xA7]", commandData);
-            if (result)
-            {
-                UpdateDeviceStatus(DeviceStatus.SEND_BREATH_VOLUME_OK);
-                sendCommandDetectMikeFinish();
+                        UpdateDeviceStatus(DeviceStatus.RECEIVE_BREATH_VOLUME_OK);
+                        sendCommandDetectMikeFinish();
+                    }
+                }
             }
         }
 
         private async void sendCommandDetectMikeFinish()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectMike, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectMike;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "マイク検査終了[0xA3]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectMike, "マイク検査終了[0xA3]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnMike.BackColor = Color.White; //Reset
-                UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_FINISH_OK);
-                sendCommandDetectAcceleSensorStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnMike.BackColor = Color.White; //Reset
+                    UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_FINISH_OK);
+                    sendCommandDetectAcceleSensorStart();
+                }   
             }
         }
 
         private async void sendCommandDetectAcceleSensorStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectAcceleSensor, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectAcceleSensor;
+            byte commandStatus = (byte)CommandFlag.START;
+            string commandName = "加速度センサー検査開始[0xA4]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectAcceleSensor, "加速度センサー検査開始[0xA4]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnAcceleSensor.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_OK);
-                sendCommandSendAcceleSensor();
-            }
-        }
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnAcceleSensor.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_OK);
 
-        private async void sendCommandSendAcceleSensor()
-        {
-            //Will implement later (TMP)
-            byte x = 0; //加速度センサー（Ｘ）
-            byte y = 0; //加速度センサー（Ｙ）
-            byte z = 0; //加速度センサー（Ｚ）
+                    byte[] receiveData = await getDataFromDevice(Constant.CommandReceiveAcceleSensor, "加速度センサー値送信[0xA8]");
+                    if (receiveData != null && receiveData.Length >= 1 && receiveData[0] == Constant.CommandReceiveAcceleSensor)
+                    {
+                        //加速度センサー判定の処理
+                        byte x = 0; //加速度センサー（Ｘ）//receiveData[1]
+                        byte y = 0; //加速度センサー（Ｙ）//receiveData[2]
+                        byte z = 0; //加速度センサー（Ｚ）//receiveData[3]
 
-            byte[] commandData = new byte[] { Constant.CommandSendAcceleSensor, x, y, z };
-
-            var result = await sendCommandAuto(Constant.CommandSendAcceleSensor, "加速度センサー値送信[0xA8]", commandData);
-            if (result)
-            {
-                UpdateDeviceStatus(DeviceStatus.SEND_ACCELE_SENSOR_OK);
-                sendCommandDetectAcceleSensorFinish();
+                        UpdateDeviceStatus(DeviceStatus.RECEIVE_ACCELE_SENSOR_OK);
+                        sendCommandDetectAcceleSensorFinish();
+                    }
+                }
             }
         }
 
         private async void sendCommandDetectAcceleSensorFinish()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectAcceleSensor, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectAcceleSensor;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "加速度センサー検査終了[0xA4]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectAcceleSensor, "加速度センサー検査終了[0xA4]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnAcceleSensor.BackColor = Color.White; //Reset
-                UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_FINISH_OK);
-                sendCommandDetectWearSensorStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnAcceleSensor.BackColor = Color.White; //Reset
+                    UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_FINISH_OK);
+                    sendCommandDetectWearSensorStart();
+                }
             }
         }
 
         private async void sendCommandDetectWearSensorStart()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectWearSensor, (byte)CommandFlag.START };
+            byte commandCode = Constant.CommandDetectWearSensor;
+            byte commandStatus = (byte)CommandFlag.START;
+            string commandName = "装着センサー検査開始[0xA5]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectWearSensor, "装着センサー検査開始[0xA5]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnWearSensor.BackColor = Color.Yellow;
-                UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_OK);
-                sendCommandSendWearSensor();
-            }
-        }
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnWearSensor.BackColor = Color.Yellow;
+                    UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_OK);
 
-        private async void sendCommandSendWearSensor()
-        {
-            byte[] commandData = new byte[] { Constant.CommandSendWearSensor };
+                    byte[] receiveData = await getDataFromDevice(Constant.CommandReceiveWearSensor, "装着センサー値送信[0xA9]");
+                    if (receiveData != null && receiveData.Length >= 1 && receiveData[0] == Constant.CommandReceiveWearSensor)
+                    {
+                        //装着センサー判定の処理
 
-            var result = await sendCommandAuto(Constant.CommandSendWearSensor, "装着センサー値送信[0xA9]", commandData);
-            if (result)
-            {
-                UpdateDeviceStatus(DeviceStatus.SEND_WEAR_SENSOR_OK);
-                sendCommandDetectWearSensorFinish();
+                        UpdateDeviceStatus(DeviceStatus.RECEIVE_WEAR_SENSOR_OK);
+                        sendCommandDetectWearSensorFinish();
+                    }
+                }
             }
         }
 
         private async void sendCommandDetectWearSensorFinish()
         {
-            byte[] commandData = new byte[] { Constant.CommandDetectWearSensor, (byte)CommandFlag.FINISH };
+            byte commandCode = Constant.CommandDetectWearSensor;
+            byte commandStatus = (byte)CommandFlag.FINISH;
+            string commandName = "装着センサー検査終了[0xA5]";
 
-            var result = await sendCommandAuto(Constant.CommandDetectWearSensor, "装着センサー検査終了[0xA5]", commandData);
+            byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnWearSensor.BackColor = Color.White; //Reset
-                UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_FINISH_OK);
-                sendCommandDetectEEPROMStart();
+                bool isSent = await isCommandSent(commandCode, commandStatus, commandName);
+                if (isSent)
+                {
+                    btnWearSensor.BackColor = Color.White; //Reset
+                    UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_FINISH_OK);
+                    sendCommandDetectEEPROMStart();
+                }  
             }
         }
 
         private async void sendCommandDetectEEPROMStart()
         {
             btnEEPROM.BackColor = Color.Yellow;
-            byte[] commandData = new byte[] { Constant.CommandDetectEEPROM };
 
-            var result = await sendCommandAuto(Constant.CommandDetectEEPROM, "EEPROM検査開始[0xA6]", commandData);
+            byte commandCode = Constant.CommandDetectEEPROM;
+            string commandName = "EEPROM検査開始[0xA6]";
+
+            byte[] commandData = new byte[] { commandCode };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                btnEEPROM.BackColor = Color.White; //Reset
-                UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
-                sendCommandSendPowerSWOff();
+                bool isSent = await isCommandSentOnly(commandCode, commandName);
+                if (isSent)
+                {
+                    btnEEPROM.BackColor = Color.White; //Reset
+                    UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
+                    sendCommandSendPowerSWOff();
+                }
             }
         }
 
         private async void sendCommandSendPowerSWOff()
         {
-            byte[] commandData = new byte[] { Constant.CommandSendPowerSWOff };
+            byte commandCode = Constant.CommandSendPowerSWOff;
+            string commandName = "電源SW OFF送信[0xF0]";
 
-            var result = await sendCommandAuto(Constant.CommandSendPowerSWOff, "電源SW OFF送信[0xF0]", commandData);
+            byte[] commandData = new byte[] { commandCode };
+
+            var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
             {
-                UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
-                DisconnectDevice(true);
+                bool isSent = await isCommandSentOnly(commandCode, commandName);
+                if (isSent)
+                {
+                    UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
+                    DisconnectDevice(true);
 
-                btnFinish.BackColor = Color.Yellow;
+                    btnFinish.BackColor = Color.Yellow;
 
-                numGood++;
-                updateResultTable();
-                lblCheckResult.Text = "OK";
-                //Write log here
+                    numGood++;
+                    updateResultTable();
+                    lblCheckResult.Text = "OK";
+
+                    //Write log here
+                }
             }
         }
 
@@ -979,6 +1087,64 @@ namespace ProductProcessCheckApp
             {
                 MessageBox.Show($"Characteristic: {Utility.GetUUIDString(chara.Uuid)} Not Support Method ValueChanged", Constant.APP_NAME);
             }
+        }
+
+        private async Task<bool> isCommandSent(byte commandCode, byte commandStatus, string commandName)
+        {
+            byte[] data = await ReadValue(writeCharacteristic);
+            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == commandStatus)
+            {
+                return true;
+            }
+            else
+            {
+                lblStatus.Text = commandName + "を失敗に送信しました";
+                return false;
+            }
+        }
+
+        private async Task<bool> isCommandSentOnly(byte commandCode, string commandName)
+        {
+            byte[] data = await ReadValue(writeCharacteristic);
+            if (data != null && data.Length >= 1 && data[0] == commandCode)
+            {
+                return true;
+            }
+            else
+            {
+                lblStatus.Text = commandName + "を失敗に送信しました";
+                return false;
+            }
+        }
+
+        private async Task<byte[]> getDataFromDevice(byte commandCode, string commandName)
+        {
+            //Wait to reveive Command from device to PC
+            System.Threading.Thread.Sleep(1000);
+
+            byte[] receiveData = await ReadValue(writeCharacteristic);
+
+            bool receivedFlag = true;
+            if(receiveData == null || receiveData.Length < 1)
+            {
+                receivedFlag = false;
+            } else
+            {
+                //TMP code 
+                receiveData[0] = commandCode;
+
+                if (receiveData[0] != commandCode)
+                {
+                    receivedFlag = false;
+                }
+            }
+
+            if(!receivedFlag)
+            {
+                lblStatus.Text = "デバイスから" + commandName + "を失敗に受信しました";
+            }
+
+            return receiveData;
         }
     }
 }
