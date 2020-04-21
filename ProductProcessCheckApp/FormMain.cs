@@ -273,6 +273,7 @@ namespace ProductProcessCheckApp
             lblTitleNG.ForeColor   = ColorTranslator.FromHtml("#fe0000");
             lblTitleRate.ForeColor = ColorTranslator.FromHtml("#246794");
 
+            lblStatus.Text = "";
             this.Text = Constant.APP_NAME;
             this.lblCurrentDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
 
@@ -315,8 +316,7 @@ namespace ProductProcessCheckApp
                         bleDevice = device;
                         startedFlag = false;
 
-                        //RegisterNotificationWhenValueChanged(readCharacteristic);
-                        RegisterNotificationWhenValueChanged(writeCharacteristic);
+                        await RegisterNotificationWhenValueChanged();
                     }
                     else
                     {
@@ -437,9 +437,6 @@ namespace ProductProcessCheckApp
                         if (readCharacteristic != null)
                         {
                             Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
-                            var charResult = await readCharacteristic.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-
-                            readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
                         }
 
                         if (writeCharacteristic != null)
@@ -475,7 +472,7 @@ namespace ProductProcessCheckApp
 
                 StopScanning();
 
-                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_NOT_FOUND);
+                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_NOT_FOUND, false);
             }
         }
 
@@ -514,7 +511,6 @@ namespace ProductProcessCheckApp
                     GattCommunicationStatus result = await writeCharacteristic.WriteValueAsync(writeBuffer, GattWriteOption.WriteWithResponse);
 
                     Console.WriteLine($"WriteCharacterValue result:{result}");
-                    //await selectedReadCharacter.KeepRunnig(selectedWriteCharacter, sndbuf);
                     if (result == GattCommunicationStatus.Unreachable)
                     {
                         //MessageBox.Show("Command Write Failed (Unreachable)");
@@ -1056,9 +1052,11 @@ namespace ProductProcessCheckApp
             return false;
         }
 
-        public async void RegisterNotificationWhenValueChanged(GattCharacteristic chara)
+        public async Task<bool> RegisterNotificationWhenValueChanged()
         {
-            GattCharacteristicProperties properties = chara.CharacteristicProperties;
+            await EnableNotification();
+
+            GattCharacteristicProperties properties = readCharacteristic.CharacteristicProperties;
 
             var configDesValue = GattClientCharacteristicConfigurationDescriptorValue.None;
             if (properties.HasFlag(GattCharacteristicProperties.Indicate))
@@ -1071,22 +1069,44 @@ namespace ProductProcessCheckApp
             try
             {
                 // Write the ClientCharacteristicConfigurationDescriptor in order for server to send notifications
-                GattWriteResult status = await chara.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(configDesValue);
-                var result = await chara.WriteClientCharacteristicConfigurationDescriptorAsync(configDesValue);
+                //GattWriteResult status = await chara.WriteClientCharacteristicConfigurationDescriptorWithResultAsync(configDesValue);
+                var result = await readCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(configDesValue);
                 if (result == GattCommunicationStatus.Success)
                 {
-                    chara.ValueChanged += WriteCharacteristic_ValueChanged;
+                    readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
                 }
             }
             catch (Exception ex)
             {
             }
 
-            var currentDesValue = await chara.ReadClientCharacteristicConfigurationDescriptorAsync();
-            if (currentDesValue.ClientCharacteristicConfigurationDescriptor != GattClientCharacteristicConfigurationDescriptorValue.Notify)
+            return true;
+        }
+
+        // characteristic のnotification 有効化する
+        public async Task<bool> EnableNotification()
+        {
+            var descs = await readCharacteristic.GetDescriptorsAsync();
+
+            foreach (var desc in descs.Descriptors)
             {
-                MessageBox.Show($"Characteristic: {Utility.GetUUIDString(chara.Uuid)} Not Support Method ValueChanged", Constant.APP_NAME);
+                Debug.WriteLine($"Descriptor UUID {desc.Uuid}, Type:{desc.GetType()}");
+                if (desc.Uuid.ToString() == Constant.ANDROID_CENTRAL_UUID)
+                {
+                    byte[] ENABLE_INDICATION_VALUE = { 0x02, 0x00 };
+                    DataWriter dataWriter = new DataWriter();
+                    dataWriter.WriteBytes(ENABLE_INDICATION_VALUE);
+                    IBuffer writeBuffer = dataWriter.DetachBuffer();
+                    var result = await desc.WriteValueAsync(writeBuffer);
+
+                    if (result == GattCommunicationStatus.Success)
+                    {
+                        return true;
+                    }
+                }
             }
+
+            return false;
         }
 
         private async Task<bool> isCommandSent(byte commandCode, byte commandStatus, string commandName)
