@@ -1117,7 +1117,7 @@ namespace ProductProcessCheckApp
             }
         }
 
-        private async Task<byte[]> getDataFromDevice(byte commandCode, string commandName)
+        private async Task<byte[]> getDataFromDevice(byte receiveCommandCode, string receiveCommandName)
         {
             //Wait to reveive Command from device to PC
             System.Threading.Thread.Sleep(1000);
@@ -1131,9 +1131,9 @@ namespace ProductProcessCheckApp
             } else
             {
                 //TMP code 
-                receiveData[0] = commandCode;
+                receiveData[0] = receiveCommandCode;
 
-                if (receiveData[0] != commandCode)
+                if (receiveData[0] != receiveCommandCode)
                 {
                     receivedFlag = false;
                 }
@@ -1141,7 +1141,7 @@ namespace ProductProcessCheckApp
 
             if(!receivedFlag)
             {
-                lblStatus.Text = "デバイスから" + commandName + "を失敗に受信しました";
+                lblStatus.Text = "デバイスから" + receiveCommandName + "を失敗に受信しました";
             }
 
             return receiveData;
