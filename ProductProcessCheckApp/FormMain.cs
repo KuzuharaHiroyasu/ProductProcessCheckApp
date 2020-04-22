@@ -434,14 +434,11 @@ namespace ProductProcessCheckApp
                         readCharacteristic = readCharacteristicResult.Characteristics.FirstOrDefault();
                         writeCharacteristic = writeCharacteristicResult.Characteristics.FirstOrDefault();
 
-                        if (readCharacteristic != null)
+                        if (readCharacteristic != null && writeCharacteristic != null)
                         {
                             Console.WriteLine($"Read Characteristic Selected: {Utility.GetUUIDString(readCharacteristic.Uuid)}");
-                        }
-
-                        if (writeCharacteristic != null)
-                        {
                             Console.WriteLine($"Write Characteristic Selected: {Utility.GetUUIDString(writeCharacteristic.Uuid)}");
+
                             return true;
                         }
                     }
@@ -590,15 +587,6 @@ namespace ProductProcessCheckApp
                 var dialog = new Windows.UI.Popups.MessageDialog(ex.Message);
                 await dialog.ShowAsync();
             }
-        }
-
-        private void WriteCharacteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            Debug.WriteLine("WriteCharacteristic_ValueChanged Here");
-            byte[] data = new byte[args.CharacteristicValue.Length];
-            DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
-
-            //Do something
         }
 
         private static void ReadCharacteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
@@ -1054,7 +1042,8 @@ namespace ProductProcessCheckApp
 
         public async Task<bool> RegisterNotificationWhenValueChanged()
         {
-            await EnableNotification();
+            var isEnabled = await EnableNotification();
+            Debug.WriteLine("デバイスからPCに通知を" + (isEnabled ? "成功" : "失敗") + "に有効化しました");
 
             GattCharacteristicProperties properties = readCharacteristic.CharacteristicProperties;
 
@@ -1074,16 +1063,22 @@ namespace ProductProcessCheckApp
                 if (result == GattCommunicationStatus.Success)
                 {
                     readCharacteristic.ValueChanged += ReadCharacteristic_ValueChanged;
+                    Debug.WriteLine("デバイスからPCにNotification/Indicateの受信コールバックを成功に登録しました");
+
+                    return true;
+                }　else
+                {
+                    Debug.WriteLine("デバイスからPCにNotification/Indicateの受信コールバックを失敗に登録しました");
                 }
             }
             catch (Exception ex)
             {
             }
 
-            return true;
+            return false;
         }
 
-        // characteristic のnotification 有効化する
+        // readCharacteristicのnotification有効化する
         public async Task<bool> EnableNotification()
         {
             var descs = await readCharacteristic.GetDescriptorsAsync();
@@ -1111,8 +1106,11 @@ namespace ProductProcessCheckApp
 
         private async Task<bool> isCommandSent(byte commandCode, byte commandStatus, string commandName)
         {
-            byte[] data = await ReadValue(writeCharacteristic);
-            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == commandStatus)
+            //Wait to reveive CommandResponse from device to PC (Wait readCharacteristic.Value_Changed)
+            System.Threading.Thread.Sleep(1000);
+
+            byte[] data = await ReadValue(readCharacteristic);
+            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == (byte)CommandReturn.SUCCESS)
             {
                 return true;
             }
@@ -1125,8 +1123,11 @@ namespace ProductProcessCheckApp
 
         private async Task<bool> isCommandSentOnly(byte commandCode, string commandName)
         {
-            byte[] data = await ReadValue(writeCharacteristic);
-            if (data != null && data.Length >= 1 && data[0] == commandCode)
+            //Wait to reveive CommandResponse from device to PC (Wait readCharacteristic.Value_Changed)
+            System.Threading.Thread.Sleep(1000);
+
+            byte[] data = await ReadValue(readCharacteristic);
+            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == (byte)CommandReturn.SUCCESS)
             {
                 return true;
             }
@@ -1139,10 +1140,10 @@ namespace ProductProcessCheckApp
 
         private async Task<byte[]> getDataFromDevice(byte receiveCommandCode, string receiveCommandName)
         {
-            //Wait to reveive Command from device to PC
+            //Wait to reveive CommandResponse from device to PC (Wait readCharacteristic.Value_Changed)
             System.Threading.Thread.Sleep(1000);
 
-            byte[] receiveData = await ReadValue(writeCharacteristic);
+            byte[] receiveData = await ReadValue(readCharacteristic);
 
             bool receivedFlag = true;
             if(receiveData == null || receiveData.Length < 1)
@@ -1150,9 +1151,7 @@ namespace ProductProcessCheckApp
                 receivedFlag = false;
             } else
             {
-                //TMP code 
-                receiveData[0] = receiveCommandCode;
-
+                //receiveData[0] = receiveCommandCode; //TMP code 
                 if (receiveData[0] != receiveCommandCode)
                 {
                     receivedFlag = false;
