@@ -498,7 +498,7 @@ namespace ProductProcessCheckApp
 
         private void DateTimer_Tick(object sender, EventArgs e)
         {
-            this.lblCurrentDate.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            this.lblCurrentDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
         }
 
         public async Task SendCommandToDevice(string commandInfo)
