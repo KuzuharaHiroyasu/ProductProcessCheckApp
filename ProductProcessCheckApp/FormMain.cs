@@ -361,8 +361,14 @@ namespace ProductProcessCheckApp
         {
             try
             {
-                watcher.Stop();
-                deviceWatcher.Stop();
+                if (watcher.Status == BluetoothLEAdvertisementWatcherStatus.Started) {
+                    watcher.Stop();
+                }
+                
+                if(deviceWatcher.Status == DeviceWatcherStatus.Started)
+                {
+                    deviceWatcher.Stop();
+                }
             }
             catch (Exception e)
             {
