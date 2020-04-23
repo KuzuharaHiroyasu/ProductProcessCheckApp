@@ -9,11 +9,22 @@ namespace ProductProcessCheckApp
 {
     class LogWriter
     {
+        private FileStream fs;
         private StreamWriter sw;
 
-        public void logFileCreate(string filePath, string fileName)
+        public void logFileCreate(string filePath, string modelName)
         {
-            sw = File.CreateText(filePath + fileName);
+            if (filePath == "" || !Directory.Exists(filePath))
+            {
+                filePath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            }
+
+            filePath = System.IO.Path.GetDirectoryName(filePath);
+
+            string fileName = modelName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt";
+
+            fs = File.Create(filePath + "\\" + fileName);
+            sw = new StreamWriter(fs);
         }
 
         public void verLogWrite(string ver)
@@ -32,11 +43,20 @@ namespace ProductProcessCheckApp
             }
         }
 
-        public void scanLogWrite(string time, string address, string result, string num)
+        public void scanLogWrite(string address, string result, string num)
         {
             if (sw != null)
             {
-                sw.WriteLine(time + " [" + address + "] " + result + num);
+                string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+                //アドレス加工
+                int val = 2;
+                for(int i = 0; i < 5; i++)
+                {
+                    address = address.Insert(val, ":");
+                    val = val + 3;
+                }
+                sw.WriteLine(time + " [" + address + "] " + result + " " + num);
             }
         }
 
@@ -45,6 +65,8 @@ namespace ProductProcessCheckApp
             if (sw != null)
             {
                 sw.WriteLine("検査予定数：" + scanPlanNum + " 検査数：" + scanNum + " OK：" + ret_ok + " NG：" + ret_ng);
+                sw.Close();
+                fs.Close();
             }
         }
     }

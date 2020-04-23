@@ -62,6 +62,7 @@
             this.btnInspectTitle = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.lblCheckPlanNum = new System.Windows.Forms.Label();
             this.lblRate = new System.Windows.Forms.Label();
             this.lblNumNG = new System.Windows.Forms.Label();
             this.lblNumGood = new System.Windows.Forms.Label();
@@ -112,7 +113,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxSerialEnd = new System.Windows.Forms.TextBox();
             this.textBoxSerialStart = new System.Windows.Forms.TextBox();
-            this.lblCheckPlanNum = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel12.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -185,7 +185,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51936F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48064F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 222F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
             this.tableLayoutPanel1.Controls.Add(this.lblVersion, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblModelName, 0, 0);
@@ -202,10 +202,10 @@
             this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblVersion.Location = new System.Drawing.Point(148, 7);
+            this.lblVersion.Location = new System.Drawing.Point(147, 7);
             this.lblVersion.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(149, 15);
+            this.lblVersion.Size = new System.Drawing.Size(148, 15);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "Ver：----------";
             // 
@@ -214,10 +214,10 @@
             this.lblAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAddress.AutoSize = true;
             this.lblAddress.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblAddress.Location = new System.Drawing.Point(302, 7);
+            this.lblAddress.Location = new System.Drawing.Point(300, 7);
             this.lblAddress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(219, 15);
+            this.lblAddress.Size = new System.Drawing.Size(221, 15);
             this.lblAddress.TabIndex = 1;
             this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
@@ -226,10 +226,10 @@
             this.lblModelName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblModelName.AutoSize = true;
             this.lblModelName.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblModelName.Location = new System.Drawing.Point(3, 7);
+            this.lblModelName.Location = new System.Drawing.Point(3, 1);
             this.lblModelName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(140, 15);
+            this.lblModelName.Size = new System.Drawing.Size(139, 27);
             this.lblModelName.TabIndex = 0;
             this.lblModelName.Text = "機種名：----------";
             // 
@@ -400,6 +400,19 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(385, 41);
             this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // lblCheckPlanNum
+            // 
+            this.lblCheckPlanNum.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblCheckPlanNum.AutoSize = true;
+            this.lblCheckPlanNum.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblCheckPlanNum.Location = new System.Drawing.Point(30, 12);
+            this.lblCheckPlanNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblCheckPlanNum.Name = "lblCheckPlanNum";
+            this.lblCheckPlanNum.Size = new System.Drawing.Size(16, 16);
+            this.lblCheckPlanNum.TabIndex = 4;
+            this.lblCheckPlanNum.Text = "0";
+            this.lblCheckPlanNum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblRate
             // 
@@ -1146,19 +1159,6 @@
             this.textBoxSerialStart.Size = new System.Drawing.Size(149, 19);
             this.textBoxSerialStart.TabIndex = 0;
             // 
-            // lblCheckPlanNum
-            // 
-            this.lblCheckPlanNum.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.lblCheckPlanNum.AutoSize = true;
-            this.lblCheckPlanNum.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblCheckPlanNum.Location = new System.Drawing.Point(30, 12);
-            this.lblCheckPlanNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblCheckPlanNum.Name = "lblCheckPlanNum";
-            this.lblCheckPlanNum.Size = new System.Drawing.Size(16, 16);
-            this.lblCheckPlanNum.TabIndex = 4;
-            this.lblCheckPlanNum.Text = "0";
-            this.lblCheckPlanNum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1176,6 +1176,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "FormMain";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.panel1.ResumeLayout(false);
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();

@@ -34,6 +34,8 @@ namespace ProductProcessCheckApp
         private DeviceStatus deviceStatus = DeviceStatus.NOT_CONNECT;
 
         private IniFile ini;
+        private LogWriter log = new LogWriter();
+        private string g_address;
 
         private int numGood    = 0;
         private int numNotGood = 0;
@@ -111,12 +113,26 @@ namespace ProductProcessCheckApp
         {
             if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
-                DisconnectDevice(false);
+                if (textBoxSerialStart.Text != "" || textBoxSerialEnd.Text != "")
+                {
+                    if (textBoxSerialStart.Enabled == true && textBoxSerialEnd.Enabled == true)
+                    {
+                        uint planNum = Convert.ToUInt32(textBoxSerialEnd.Text) - Convert.ToUInt32(textBoxSerialStart.Text) + 1;
 
-                SetupSearchTimeOut();
-                SetupBluetooth();
+                        lblCheckPlanNum.Text = planNum.ToString();
+                        log.serialLogWrite(textBoxSerialStart.Text, textBoxSerialEnd.Text);
 
-                lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
+                        textBoxSerialStart.Enabled = false;
+                        textBoxSerialEnd.Enabled = false;
+                    }
+
+                    DisconnectDevice(false);
+
+                    SetupSearchTimeOut();
+                    SetupBluetooth();
+
+                    lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
+                }
             } else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) 
             {
                 //[START]ボタンクリック
@@ -251,6 +267,8 @@ namespace ProductProcessCheckApp
 
             var modelName = ini.Read("MODEL", "MODEL_NAME");
             var version = ini.Read("BUILD_VER", "VERSION");
+            var path = ini.Read("FILE_PATH", "PATH");
+
             if (modelName != "")
             {
                 lblModelName.Text = "機種名：" + modelName;
@@ -260,6 +278,10 @@ namespace ProductProcessCheckApp
             {
                 lblVersion.Text = "Ver：" + version;
             }
+
+            log.logFileCreate(path, modelName);
+
+            log.verLogWrite(version);
         }
 
         private void CustomGUI()
@@ -367,6 +389,7 @@ namespace ProductProcessCheckApp
                 else
                 {
                     Debug.WriteLine("Success: Found device " + (device.Name ?? "unnamed") + " for address " + address);
+                    g_address = address;
                 }
             }
 
@@ -634,6 +657,8 @@ namespace ProductProcessCheckApp
             string commandName = "充電検査開始[0xA0]";
 
             byte[] commandData = new byte[] { commandCode, commandStatus };
+
+            log.scanLogWrite(g_address, "OK", "0");
 
             var result = await sendCommandAuto(commandCode, commandName, commandData);
             if (result)
@@ -1136,6 +1161,12 @@ namespace ProductProcessCheckApp
                 lblStatus.Text = commandName + "を失敗に送信しました";
                 return false;
             }
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // ウインドウを閉じる時に最終結果を書き込み
+            log.resultLogWrite(lblCheckPlanNum.Text, lblNumTotal.Text, lblNumGood.Text, lblNumNG.Text);
         }
 
         private async Task<byte[]> getDataFromDevice(byte receiveCommandCode, string receiveCommandName)
