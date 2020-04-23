@@ -1107,10 +1107,10 @@ namespace ProductProcessCheckApp
         private async Task<bool> isCommandSent(byte commandCode, byte commandStatus, string commandName)
         {
             //Wait to reveive CommandResponse from device to PC (Wait readCharacteristic.Value_Changed)
-            System.Threading.Thread.Sleep(1000);
+            //System.Threading.Thread.Sleep(1000);
 
-            byte[] data = await ReadValue(readCharacteristic);
-            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == (byte)CommandReturn.SUCCESS)
+            byte[] data = await ReadValue(writeCharacteristic);
+            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == commandStatus) //data[1] == (byte)CommandReturn.SUCCESS
             {
                 return true;
             }
@@ -1124,10 +1124,10 @@ namespace ProductProcessCheckApp
         private async Task<bool> isCommandSentOnly(byte commandCode, string commandName)
         {
             //Wait to reveive CommandResponse from device to PC (Wait readCharacteristic.Value_Changed)
-            System.Threading.Thread.Sleep(1000);
+            //System.Threading.Thread.Sleep(1000);
 
-            byte[] data = await ReadValue(readCharacteristic);
-            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == (byte)CommandReturn.SUCCESS)
+            byte[] data = await ReadValue(writeCharacteristic);
+            if (data != null && data.Length >= 1 && data[0] == commandCode)
             {
                 return true;
             }
