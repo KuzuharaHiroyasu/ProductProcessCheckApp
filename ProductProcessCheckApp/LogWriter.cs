@@ -49,14 +49,7 @@ namespace ProductProcessCheckApp
             {
                 string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
-                //アドレス加工
-                int val = 2;
-                for(int i = 0; i < 5; i++)
-                {
-                    address = address.Insert(val, ":");
-                    val = val + 3;
-                }
-                sw.WriteLine(time + " [" + address + "] " + result + " " + num);
+                sw.WriteLine(time + " [" + Utility.getFormatDeviceAddress(address) + "] " + result + " " + num);
             }
         }
 
