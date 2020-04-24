@@ -609,7 +609,7 @@ namespace ProductProcessCheckApp
                 {
                     Debug.WriteLine("ReadCharacteristic_ValueChanged Command 0x" + commandCode.ToString("X") + " Start");
 
-                    bool isSentOK = true; //TMP (data[1] == (int)CommandReturn.SUCCESS);
+                    bool isSentOK = (data[1] == (int)CommandReturn.SUCCESS);
 
                     if (commandCode == Constant.CommandDetectMike)
                     {
@@ -1297,7 +1297,7 @@ namespace ProductProcessCheckApp
             System.Threading.Thread.Sleep(1000);
 
             byte[] data = await ReadValue(readCharacteristic);
-            if (data != null && data.Length >= 2 && data[0] == commandCode) //TMP data[1] == (byte)CommandReturn.SUCCESS
+            if (data != null && data.Length >= 2 && data[0] == commandCode && data[1] == (byte)CommandReturn.SUCCESS) 
             {
                 return true;
             }
