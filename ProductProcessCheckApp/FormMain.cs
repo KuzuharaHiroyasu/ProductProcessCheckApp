@@ -63,6 +63,17 @@ namespace ProductProcessCheckApp
         bool acceScanResult;
         bool photoScanResult;
 
+        private int breath_max = 0;
+        private int breath_min = 0;
+        private int acce_x_max = 0;
+        private int acce_x_min = 0;
+        private int acce_y_max = 0;
+        private int acce_y_min = 0;
+        private int acce_z_max = 0;
+        private int acce_z_min = 0;
+        private int photo_max = 0;
+        private int photo_min = 0;
+
         public FormMain()
         {
             InitializeComponent();
@@ -346,9 +357,86 @@ namespace ProductProcessCheckApp
                 lblVersion.Text = "Ver：" + version;
             }
 
+            LoadIniFileMicRange();
+
+            LoadIniFileAcceRange();
+
+            LoadIniFilePhotoRange();
+
             log.logFileCreate(path, modelName);
 
             log.verLogWrite(version);
+        }
+
+        private void LoadIniFileMicRange()
+        {
+            string sens_judge_data;
+
+            //呼吸音範囲設定
+            sens_judge_data = ini.Read("BREATH_MAX", "RANGE");
+            if (sens_judge_data != "")
+            {
+                breath_max = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("BREATH_MIN", "RANGE");
+            if (sens_judge_data != "")
+            {
+                breath_min = int.Parse(sens_judge_data);
+            }
+        }
+
+        private void LoadIniFileAcceRange()
+        {
+            string sens_judge_data;
+
+            //加速度センサー範囲設定
+            sens_judge_data = ini.Read("ACL_SEN_X_MAX", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_x_max = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("ACL_SEN_X_MIN", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_x_min = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("ACL_SEN_Y_MAX", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_y_max = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("ACL_SEN_Y_MIN", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_y_min = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("ACL_SEN_Z_MAX", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_z_max = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("ACL_SEN_Z_MIN", "RANGE");
+            if (sens_judge_data != "")
+            {
+                acce_z_min = int.Parse(sens_judge_data);
+            }
+        }
+
+        private void LoadIniFilePhotoRange()
+        {
+            string sens_judge_data;
+
+            //装着センサー範囲設定
+            sens_judge_data = ini.Read("PHOTO_SEN_MAX", "RANGE");
+            if (sens_judge_data != "")
+            {
+                photo_max = int.Parse(sens_judge_data);
+            }
+            sens_judge_data = ini.Read("PHOTO_SEN_MIN", "RANGE");
+            if (sens_judge_data != "")
+            {
+                photo_min = int.Parse(sens_judge_data);
+            }
         }
 
         private void CustomGUI()
@@ -1246,7 +1334,7 @@ namespace ProductProcessCheckApp
             lblStatus.Text = "マイクチャットを更新しました";
             foreach(byte data in receivedData[1])
             {
-                if((data << 2) >= 1020)
+                if((data << 2) >= breath_min)
                 {
                     ret = true;
                     break;
@@ -1275,7 +1363,7 @@ namespace ProductProcessCheckApp
                 {
                     x = x - 256;
                 }
-                if (x <= -5 || x >= 15)
+                if (x <= acce_x_min || x >= acce_x_max)
                 {
                     ret = false;
                     break;
@@ -1286,7 +1374,7 @@ namespace ProductProcessCheckApp
                 {
                     y = y - 256;
                 }
-                if (y <= -10 || y >= 10)
+                if (y <= acce_y_min || y >= acce_y_max)
                 {
                     ret = false;
                     break;
@@ -1297,7 +1385,7 @@ namespace ProductProcessCheckApp
                 {
                     z = z - 256;
                 }
-                if (z <= 55 || z >= 75)
+                if (z <= acce_z_min || z >= acce_z_max)
                 {
                     ret = false;
                     break;
@@ -1317,7 +1405,7 @@ namespace ProductProcessCheckApp
 
             foreach (int data in receivedData[1])
             {
-                if ((data << 2) >= 100)
+                if ((data << 2) >= photo_min)
                 {
                     ret = true;
                     break;
