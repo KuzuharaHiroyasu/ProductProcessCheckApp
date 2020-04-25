@@ -29,16 +29,25 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel1 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel2 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel3 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel4 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel5 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel6 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel7 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel8 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
+            System.Windows.Forms.DataVisualization.Charting.CustomLabel customLabel9 = new System.Windows.Forms.DataVisualization.Charting.CustomLabel();
             System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
@@ -106,7 +115,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.chart_mic = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.chart_acl = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chart_acce = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart_photo = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
@@ -126,7 +135,7 @@
             this.tableLayoutPanel5.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart_mic)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart_acl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart_acce)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_photo)).BeginInit();
             this.panel4.SuspendLayout();
             this.SuspendLayout();
@@ -185,7 +194,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51936F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48064F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.Controls.Add(this.lblVersion, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblModelName, 0, 0);
@@ -202,10 +211,10 @@
             this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblVersion.Location = new System.Drawing.Point(147, 7);
+            this.lblVersion.Location = new System.Drawing.Point(145, 7);
             this.lblVersion.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(148, 15);
+            this.lblVersion.Size = new System.Drawing.Size(146, 15);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "Ver：----------";
             // 
@@ -214,10 +223,10 @@
             this.lblAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAddress.AutoSize = true;
             this.lblAddress.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblAddress.Location = new System.Drawing.Point(300, 7);
+            this.lblAddress.Location = new System.Drawing.Point(296, 7);
             this.lblAddress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(221, 15);
+            this.lblAddress.Size = new System.Drawing.Size(225, 15);
             this.lblAddress.TabIndex = 1;
             this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
@@ -229,7 +238,7 @@
             this.lblModelName.Location = new System.Drawing.Point(3, 1);
             this.lblModelName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(139, 27);
+            this.lblModelName.Size = new System.Drawing.Size(137, 27);
             this.lblModelName.TabIndex = 0;
             this.lblModelName.Text = "機種名：----------";
             // 
@@ -1028,9 +1037,22 @@
             this.chart_mic.BorderlineColor = System.Drawing.Color.Black;
             this.chart_mic.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
             this.chart_mic.BorderSkin.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea1.AxisX.Maximum = 2D;
+            customLabel1.Text = "1";
+            customLabel1.ToPosition = 200D;
+            customLabel2.FromPosition = -100D;
+            customLabel2.Text = "0";
+            customLabel2.ToPosition = 100D;
+            customLabel3.FromPosition = 100D;
+            customLabel3.Text = "2";
+            customLabel3.ToPosition = 300D;
+            chartArea1.AxisX.CustomLabels.Add(customLabel1);
+            chartArea1.AxisX.CustomLabels.Add(customLabel2);
+            chartArea1.AxisX.CustomLabels.Add(customLabel3);
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.AxisX.MajorTickMark.Enabled = false;
+            chartArea1.AxisX.Maximum = 200D;
             chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.Maximum = 1100D;
+            chartArea1.AxisY.Maximum = 1500D;
             chartArea1.AxisY.Minimum = 0D;
             chartArea1.Name = "ChartArea1";
             this.chart_mic.ChartAreas.Add(chartArea1);
@@ -1051,21 +1073,34 @@
             title1.Text = "マイク";
             this.chart_mic.Titles.Add(title1);
             // 
-            // chart_acl
+            // chart_acce
             // 
-            this.chart_acl.BorderlineColor = System.Drawing.Color.Black;
-            this.chart_acl.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea2.AxisX.Maximum = 2D;
+            this.chart_acce.BorderlineColor = System.Drawing.Color.Black;
+            this.chart_acce.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+            customLabel4.FromPosition = -100D;
+            customLabel4.Text = "0";
+            customLabel4.ToPosition = 100D;
+            customLabel5.Text = "1";
+            customLabel5.ToPosition = 200D;
+            customLabel6.FromPosition = 100D;
+            customLabel6.Text = "2";
+            customLabel6.ToPosition = 300D;
+            chartArea2.AxisX.CustomLabels.Add(customLabel4);
+            chartArea2.AxisX.CustomLabels.Add(customLabel5);
+            chartArea2.AxisX.CustomLabels.Add(customLabel6);
+            chartArea2.AxisX.MajorGrid.Enabled = false;
+            chartArea2.AxisX.MajorTickMark.Enabled = false;
+            chartArea2.AxisX.Maximum = 200D;
             chartArea2.AxisX.Minimum = 0D;
             chartArea2.AxisY.Maximum = 127D;
             chartArea2.AxisY.Minimum = -127D;
             chartArea2.Name = "ChartArea1";
-            this.chart_acl.ChartAreas.Add(chartArea2);
+            this.chart_acce.ChartAreas.Add(chartArea2);
             legend2.Enabled = false;
             legend2.Name = "Legend1";
-            this.chart_acl.Legends.Add(legend2);
-            this.chart_acl.Location = new System.Drawing.Point(189, 303);
-            this.chart_acl.Name = "chart_acl";
+            this.chart_acce.Legends.Add(legend2);
+            this.chart_acce.Location = new System.Drawing.Point(189, 303);
+            this.chart_acce.Name = "chart_acce";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             series2.Legend = "Legend1";
@@ -1078,23 +1113,36 @@
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             series4.Legend = "Legend1";
             series4.Name = "Z軸";
-            this.chart_acl.Series.Add(series2);
-            this.chart_acl.Series.Add(series3);
-            this.chart_acl.Series.Add(series4);
-            this.chart_acl.Size = new System.Drawing.Size(417, 104);
-            this.chart_acl.TabIndex = 9;
-            this.chart_acl.Text = "chart1";
+            this.chart_acce.Series.Add(series2);
+            this.chart_acce.Series.Add(series3);
+            this.chart_acce.Series.Add(series4);
+            this.chart_acce.Size = new System.Drawing.Size(417, 104);
+            this.chart_acce.TabIndex = 9;
+            this.chart_acce.Text = "chart1";
             title2.Name = "Title1";
             title2.Text = "加速度センサー";
-            this.chart_acl.Titles.Add(title2);
+            this.chart_acce.Titles.Add(title2);
             // 
             // chart_photo
             // 
             this.chart_photo.BorderlineColor = System.Drawing.Color.Black;
             this.chart_photo.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea3.AxisX.Maximum = 2D;
+            customLabel7.FromPosition = -100D;
+            customLabel7.Text = "0";
+            customLabel7.ToPosition = 100D;
+            customLabel8.Text = "1";
+            customLabel8.ToPosition = 200D;
+            customLabel9.FromPosition = 100D;
+            customLabel9.Text = "2";
+            customLabel9.ToPosition = 300D;
+            chartArea3.AxisX.CustomLabels.Add(customLabel7);
+            chartArea3.AxisX.CustomLabels.Add(customLabel8);
+            chartArea3.AxisX.CustomLabels.Add(customLabel9);
+            chartArea3.AxisX.MajorGrid.Enabled = false;
+            chartArea3.AxisX.MajorTickMark.Enabled = false;
+            chartArea3.AxisX.Maximum = 200D;
             chartArea3.AxisX.Minimum = 0D;
-            chartArea3.AxisY.Maximum = 500D;
+            chartArea3.AxisY.Maximum = 800D;
             chartArea3.AxisY.Minimum = 0D;
             chartArea3.Name = "ChartArea1";
             this.chart_photo.ChartAreas.Add(chartArea3);
@@ -1166,7 +1214,7 @@
             this.ClientSize = new System.Drawing.Size(894, 540);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.chart_photo);
-            this.Controls.Add(this.chart_acl);
+            this.Controls.Add(this.chart_acce);
             this.Controls.Add(this.chart_mic);
             this.Controls.Add(this.panel11);
             this.Controls.Add(this.panel10);
@@ -1197,7 +1245,7 @@
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart_mic)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart_acl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart_acce)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_photo)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
@@ -1243,7 +1291,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_mic;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart_acl;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart_acce;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_photo;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label3;

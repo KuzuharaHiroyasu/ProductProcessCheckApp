@@ -51,13 +51,17 @@ namespace ProductProcessCheckApp
         List<byte[]> receivedAcceleData = new List<byte[]>();
         List<byte[]> receivedWearData = new List<byte[]>();
 
-        private const int GraphDataNum = 40 + 1;
+        private int GraphDataNum = 200 + 1;
         Queue<double> MicDataRespQueue = new Queue<double>();
-        Queue<double> AclXDataRespQueue = new Queue<double>();
-        Queue<double> AclYDataRespQueue = new Queue<double>();
-        Queue<double> AclZDataRespQueue = new Queue<double>();
+        Queue<double> AcceXDataRespQueue = new Queue<double>();
+        Queue<double> AcceYDataRespQueue = new Queue<double>();
+        Queue<double> AcceZDataRespQueue = new Queue<double>();
         Queue<double> PhotoDataRespQueue = new Queue<double>();
         object lockData = new object();
+
+        bool micScanResult;
+        bool acceScanResult;
+        bool photoScanResult;
 
         public FormMain()
         {
@@ -73,51 +77,95 @@ namespace ProductProcessCheckApp
         private void initGraphShow()
         {
             MicDataRespQueue.Clear();
-            AclXDataRespQueue.Clear();
-            AclYDataRespQueue.Clear();
-            AclZDataRespQueue.Clear();
+            AcceXDataRespQueue.Clear();
+            AcceYDataRespQueue.Clear();
+            AcceZDataRespQueue.Clear();
             PhotoDataRespQueue.Clear();
 
             for (int i = 0; i < GraphDataNum; i++)
             {
                 MicDataRespQueue.Enqueue(0);
-                AclXDataRespQueue.Enqueue(0);
-                AclYDataRespQueue.Enqueue(0);
-                AclZDataRespQueue.Enqueue(0);
+                AcceXDataRespQueue.Enqueue(0);
+                AcceYDataRespQueue.Enqueue(0);
+                AcceZDataRespQueue.Enqueue(0);
                 PhotoDataRespQueue.Enqueue(0);
             }
 
-            GraphUpdate_Apnea();
+            GraphUpdate_Mic();
+            GraphUpdate_Acce();
+            GraphUpdate_Photo();
         }
 
-        private void GraphUpdate_Apnea()
+        private void GraphUpdate_Mic()
         {
             int cnt = 0;
 
             lock (lockData)
             {
                 Series srs_micresp = chart_mic.Series["マイク"];
-                Series srs_aclxresp = chart_acl.Series["X軸"];
-                Series srs_aclyresp = chart_acl.Series["Y軸"];
-                Series srs_aclzresp = chart_acl.Series["Z軸"];
-                Series srs_photoresp = chart_photo.Series["装着センサー"];
                 srs_micresp.Points.Clear();
-                srs_aclxresp.Points.Clear();
-                srs_aclyresp.Points.Clear();
-                srs_aclzresp.Points.Clear();
-                srs_photoresp.Points.Clear();
                 cnt = 0;
                 foreach (double data in MicDataRespQueue)
                 {
                     srs_micresp.Points.AddXY(cnt, data);
-                    srs_aclxresp.Points.AddXY(cnt, data);
-                    srs_aclyresp.Points.AddXY(cnt, data);
-                    srs_aclzresp.Points.AddXY(cnt, data);
+                    cnt++;
+                }
+            }
+            chart_mic.Invalidate();
+        }
+
+        private void GraphUpdate_Acce()
+        {
+            int cnt = 0;
+
+            lock (lockData)
+            {
+                Series srs_acceXresp = chart_acce.Series["X軸"];
+                Series srs_acceYresp = chart_acce.Series["Y軸"];
+                Series srs_acceZresp = chart_acce.Series["Z軸"];
+                srs_acceXresp.Points.Clear();
+                srs_acceYresp.Points.Clear();
+                srs_acceZresp.Points.Clear();
+                cnt = 0;
+                foreach (double data in AcceXDataRespQueue)
+                {
+                    srs_acceXresp.Points.AddXY(cnt, data);
+                    cnt++;
+                }
+                cnt = 0;
+                foreach (double data in AcceYDataRespQueue)
+                {
+                    srs_acceYresp.Points.AddXY(cnt, data);
+                    cnt++;
+                }
+                cnt = 0;
+                foreach (double data in AcceZDataRespQueue)
+                {
+                    srs_acceZresp.Points.AddXY(cnt, data);
+                    cnt++;
+                }
+            }
+            chart_acce.Invalidate();
+        }
+
+        private void GraphUpdate_Photo()
+        {
+            int cnt = 0;
+
+            lock (lockData)
+            {
+                Series srs_photoresp = chart_photo.Series["装着センサー"];
+                srs_photoresp.Points.Clear();
+                cnt = 0;
+                foreach (double data in PhotoDataRespQueue)
+                {
                     srs_photoresp.Points.AddXY(cnt, data);
                     cnt++;
                 }
             }
+            chart_photo.Invalidate();
         }
+
         private async void btnConnect_Click(object sender, EventArgs e)
         {
             if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
@@ -530,6 +578,10 @@ namespace ProductProcessCheckApp
         private void DateTimer_Tick(object sender, EventArgs e)
         {
             this.lblCurrentDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
+
+            GraphUpdate_Mic();
+            GraphUpdate_Acce();
+            GraphUpdate_Photo();
         }
 
         public async Task<CommandResult> WriteCommandToDevice(byte[] commandData)
@@ -721,8 +773,8 @@ namespace ProductProcessCheckApp
                     return;
                 }
 
+                SetMicData(receivedData[1] << 2);
                 numReceivedBreath++;
-
                 lblStatus.Text = "デバイスから呼吸音を受信中...(Data " + numReceivedBreath + ")";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedBreath + ")");
 
@@ -731,9 +783,10 @@ namespace ProductProcessCheckApp
                 {
                     UpdateDeviceStatus(DeviceStatus.RECEIVE_BREATH_VOLUME_OK);
 
-                    updateMikeChartArea(receivedBreathData); //呼吸音判定の処理
+                    micScanResult = updateMikeChartArea(receivedBreathData); //呼吸音判定の処理
 
                     System.Threading.Thread.Sleep(1500);
+
                     sendCommandDetectMikeFinish();
                 }
             }
@@ -745,6 +798,7 @@ namespace ProductProcessCheckApp
                     return;
                 }
 
+                SetAcceData(receivedData[1], receivedData[3], receivedData[5]);
                 numReceivedAccele++;
                 lblStatus.Text = "デバイスから加速度センサー値を受信中...(Data " + numReceivedAccele + ")";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedAccele + ")");
@@ -754,9 +808,10 @@ namespace ProductProcessCheckApp
                 {
                     UpdateDeviceStatus(DeviceStatus.RECEIVE_ACCELE_SENSOR_OK);
 
-                    updateAcceleSensorChartArea(receivedAcceleData); //加速度センサー判定の処理
+                    acceScanResult = updateAcceleSensorChartArea(receivedAcceleData); //加速度センサー判定の処理
 
                     System.Threading.Thread.Sleep(1500);
+
                     sendCommandDetectAcceleSensorFinish();
                 }
             }
@@ -768,6 +823,7 @@ namespace ProductProcessCheckApp
                     return;
                 }
 
+                SetPotoData(receivedData[1] << 2);
                 numReceivedWear++;
                 lblStatus.Text = "デバイスから装着センサー値を受信中...(Data " + numReceivedWear + ")";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedWear + ")");
@@ -777,11 +833,63 @@ namespace ProductProcessCheckApp
                 { 
                     UpdateDeviceStatus(DeviceStatus.RECEIVE_WEAR_SENSOR_OK);
 
-                    updateWearSensorChartArea(receivedWearData); //装着センサー判定の処理 
+                    photoScanResult = updateWearSensorChartArea(receivedWearData); //装着センサー判定の処理 
 
                     System.Threading.Thread.Sleep(1500);
+
                     sendCommandDetectWearSensorFinish();
                 }
+            }
+        }
+
+        private void SetMicData(int breathData)
+        {
+            lock (lockData)
+            {
+                // 呼吸データ
+                if (MicDataRespQueue.Count >= GraphDataNum)
+                {
+                    MicDataRespQueue.Dequeue();
+                }
+                MicDataRespQueue.Enqueue(breathData);
+            }
+        }
+
+        private void SetAcceData(int acceXData, int acceYData, int acceZData)
+        {
+            lock (lockData)
+            {
+                // 加速度データ
+                if (AcceXDataRespQueue.Count >= GraphDataNum)
+                {
+                    AcceXDataRespQueue.Dequeue();
+                }
+                AcceXDataRespQueue.Enqueue(acceXData);
+
+                if (AcceYDataRespQueue.Count >= GraphDataNum)
+                {
+                    AcceYDataRespQueue.Dequeue();
+                }
+                AcceYDataRespQueue.Enqueue(acceYData);
+
+                if (AcceZDataRespQueue.Count >= GraphDataNum)
+                {
+                    AcceZDataRespQueue.Dequeue();
+                }
+                AcceZDataRespQueue.Enqueue(acceZData);
+            }
+        }
+
+        private void SetPotoData(int photoData)
+        {
+            lock (lockData)
+            {
+                // 呼吸データ
+                if (PhotoDataRespQueue.Count >= GraphDataNum)
+                {
+                    PhotoDataRespQueue.Dequeue();
+                }
+                PhotoDataRespQueue.Enqueue(photoData);
             }
         }
 
@@ -1131,28 +1239,91 @@ namespace ProductProcessCheckApp
         }
 
         //マイクグラフに描画
-        public void updateMikeChartArea(List<byte[]> receivedData)
+        public bool updateMikeChartArea(List<byte[]> receivedData)
         {
+            bool ret = false;
             Debug.WriteLine("Update Mike Chart Area");
             lblStatus.Text = "マイクチャットを更新しました";
+            foreach(byte data in receivedData[1])
+            {
+                if((data << 2) >= 1020)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+            return ret;
         }
 
         //加速度センサーグラフに描画
-        public void updateAcceleSensorChartArea(List<byte[]> receivedData)
+        public bool updateAcceleSensorChartArea(List<byte[]> receivedData)
         {
-            byte x = 0; //加速度センサー（Ｘ）//receiveData[1]
-            byte y = 0; //加速度センサー（Ｙ）//receiveData[2]
-            byte z = 0; //加速度センサー（Ｚ）//receiveData[3]
+            bool ret = true;
+
+            int x = 0;
+            int y = 0; //加速度センサー（Ｙ）//receiveData[2]
+            int z = 0; //加速度センサー（Ｚ）//receiveData[3]
 
             Debug.WriteLine("Update Accele Sensor Chart Area");
             lblStatus.Text = "加速度センサーチャットを更新しました";
+
+
+            foreach (byte[] data in receivedData)
+            {
+                x = Convert.ToInt16(data[1]);
+                if((x & 0x80) == 0x80)
+                {
+                    x = x - 256;
+                }
+                if (x <= -5 || x >= 15)
+                {
+                    ret = false;
+                    break;
+                }
+
+                y = Convert.ToInt16(data[3]);
+                if ((y & 0x80) == 0x80)
+                {
+                    y = y - 256;
+                }
+                if (y <= -10 || y >= 10)
+                {
+                    ret = false;
+                    break;
+                }
+
+                z = Convert.ToInt16(data[5]);
+                if ((z & 0x80) == 0x80)
+                {
+                    z = z - 256;
+                }
+                if (z <= 55 || z >= 75)
+                {
+                    ret = false;
+                    break;
+                }
+            }
+
+            return ret;
         }
 
         //装着センサーグラフに描画
-        public void updateWearSensorChartArea(List<byte[]> receivedData)
+        public bool updateWearSensorChartArea(List<byte[]> receivedData)
         {
+            bool ret = false;
+
             Debug.WriteLine("Update Wear Sensor Chart Area");
             lblStatus.Text = "装着センサーチャットを更新しました";
+
+            foreach (int data in receivedData[1])
+            {
+                if ((data << 2) >= 100)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+            return ret;
         }
 
         public void updateResultTable()
@@ -1344,13 +1515,13 @@ namespace ProductProcessCheckApp
         private void UpdateCheckMikeResultOnTable(bool isSentOk)
         {
             log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "4");
-            if (isSentOk)
-            {
+            if (isSentOk && micScanResult)
+            {// コマンド応答OK & 判定OK
                 int okNum = Convert.ToInt32(lblNumCheckMicOK.Text) + 1;
                 lblNumCheckMicOK.Text = okNum.ToString();
             }
             else
-            {
+            {// コマンド送信失敗 or コマンド応答NG
                 int ngNum = Convert.ToInt32(lblNumCheckMicNG.Text) + 1;
                 lblNumCheckMicNG.Text = ngNum.ToString();
             }
@@ -1359,7 +1530,7 @@ namespace ProductProcessCheckApp
         private void UpdateCheckAclResultOnTable(bool isSentOk)
         {
             log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "5");
-            if (isSentOk)
+            if (isSentOk && acceScanResult)
             {
                 int okNum = Convert.ToInt32(lblNumCheckAclOK.Text) + 1;
                 lblNumCheckAclOK.Text = okNum.ToString();
@@ -1374,7 +1545,7 @@ namespace ProductProcessCheckApp
         private void UpdateCheckWearResultOnTable(bool isSentOk)
         {
             log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "6");
-            if (isSentOk)
+            if (isSentOk && photoScanResult)
             {
                 int okNum = Convert.ToInt32(lblNumCheckPhotoOK.Text) + 1;
                 lblNumCheckPhotoOK.Text = okNum.ToString();
