@@ -39,6 +39,7 @@ namespace ProductProcessCheckApp
 
         private int numGood = 0;
         private int numNotGood = 0;
+        private bool isNGClick = false;
         
         private bool isDetectStartMike = false;
         private bool isDetectStartAccele = false;
@@ -179,7 +180,8 @@ namespace ProductProcessCheckApp
 
         private async void btnConnect_Click(object sender, EventArgs e)
         {
-            if(deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
+            isNGClick = false;
+            if (deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
                 if (textBoxSerialStart.Text != "" || textBoxSerialEnd.Text != "")
                 {
@@ -237,11 +239,16 @@ namespace ProductProcessCheckApp
 
         private async void btnNG_Click(object sender, EventArgs e)
         {
-            lblCheckResult.Text = "NG";
-            lblCheckResult.ForeColor = Color.Red;
-            
-            numNotGood++;
-            updateResultTable();
+            isNGClick = true;
+
+            //[NG(手動)]ボタンクリック
+            if (deviceStatus == DeviceStatus.STATUS_CHANGE_OK ||
+                deviceStatus == DeviceStatus.DETECT_BATTERY_OK ||
+                deviceStatus == DeviceStatus.DETECT_LED_OK ||
+                deviceStatus == DeviceStatus.DETECT_VIBRATION_OK)
+            {
+                sendCommandSendPowerSWOff();
+            }
         }
 
         private void UpdateDeviceStatus(DeviceStatus status, String statusMessage = "", bool showDialog = true)
@@ -321,6 +328,8 @@ namespace ProductProcessCheckApp
 
             lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             btnDisconnect.Enabled = false;
+            btnNG.Enabled = false;
+            btnNG.Text = "NG(手動)";
             UpdateDeviceStatus(DeviceStatus.NOT_CONNECT);
 
             //Reset all button
@@ -341,21 +350,13 @@ namespace ProductProcessCheckApp
         private void LoadIniFile()
         {
             ini = new IniFile("Setting.ini");
-            //ini.Write("HomePage", "http://www.google.com");
 
             var modelName = ini.Read("MODEL", "MODEL_NAME");
             var version = ini.Read("BUILD_VER", "VERSION");
             var path = ini.Read("FILE_PATH", "PATH");
 
-            if (modelName != "")
-            {
-                lblModelName.Text = "機種名：" + modelName;
-            }
-
-            if(version != "")
-            {
-                lblVersion.Text = "Ver：" + version;
-            }
+            lblModelName.Text = "機種名：" + (modelName != "" ? modelName : "-");
+            lblVersion.Text = "Ver：" + (version != "" ? version : "-");
 
             LoadIniFileMicRange();
 
@@ -445,6 +446,7 @@ namespace ProductProcessCheckApp
             btnDisconnect.BackColor = blueColor;
             btnConnect.BackColor    = blueColor;
             btnNG.BackColor         = ColorTranslator.FromHtml("#ff842e");
+            btnNG.Enabled           = false;
 
             lblTitleGood.ForeColor = ColorTranslator.FromHtml("#ff842e");
             lblTitleNG.ForeColor   = ColorTranslator.FromHtml("#fe0000");
@@ -757,10 +759,19 @@ namespace ProductProcessCheckApp
                         {
                             isDetectStartMike = false;
                             log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "4");
+
+                            //btnNGには、「マイク」検査開始コマンド受信後[自動検査]に変更する。（クリック動作無効化）
+                            btnNG.Enabled = false;
+                            btnNG.Text = "自動検査";
+
                             if (isSentOK)
                             {
                                 btnMike.BackColor = Color.Yellow;
                                 UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_OK);
+                            } else
+                            {
+                                isNGClick = true;
+                                sendCommandSendPowerSWOff();
                             }
                         }
                         else //sendCommandDetectMikeFinish
@@ -816,6 +827,8 @@ namespace ProductProcessCheckApp
                             {
                                 btnWearSensor.BackColor = Color.White; //Reset
                                 UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_FINISH_OK);
+
+                                System.Threading.Thread.Sleep(1500);
                                 sendCommandDetectEEPROMStart();
                             }
                         }
@@ -840,9 +853,21 @@ namespace ProductProcessCheckApp
 
                             btnFinish.BackColor = Color.Yellow;
 
-                            numGood++;
-                            updateResultTable();
-                            lblCheckResult.Text = "OK";
+                            if (isNGClick)
+                            {
+                                lblCheckResult.Text = "NG";
+                                lblCheckResult.ForeColor = Color.Red;
+
+                                numNotGood++;
+                                updateResultTable();
+
+                                isNGClick = false;
+                            } else
+                            {
+                                numGood++;
+                                updateResultTable();
+                                lblCheckResult.Text = "OK";
+                            }
                         }
                     }
 
@@ -998,6 +1023,8 @@ namespace ProductProcessCheckApp
                 if (isSentOk)
                 {
                     log.scanLogWrite(g_address, "OK", "0");
+
+                    btnNG.Enabled = true; //検査開始でクリック有効化する
 
                     UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
                     sendCommandDetectBatteryStart();
@@ -1280,7 +1307,6 @@ namespace ProductProcessCheckApp
 
         private async void sendCommandDetectWearSensorFinish()
         {
-            bool isSentOk = false;
             byte commandCode = Constant.CommandDetectWearSensor;
             byte commandStatus = (byte)CommandFlag.FINISH;
             string commandName = "装着センサー検査終了[0xA5]";
@@ -1298,7 +1324,6 @@ namespace ProductProcessCheckApp
         {
             btnEEPROM.BackColor = Color.Yellow;
 
-            bool isSentOk = false;
             byte commandCode = Constant.CommandDetectEEPROM;
             string commandName = "EEPROM検査開始[0xA6]";
 
@@ -1313,7 +1338,6 @@ namespace ProductProcessCheckApp
 
         private async void sendCommandSendPowerSWOff()
         {
-            bool isSentOk = false;
             byte commandCode = Constant.CommandSendPowerSWOff;
             string commandName = "電源SW OFF送信[0xF0]";
 
@@ -1323,6 +1347,17 @@ namespace ProductProcessCheckApp
             if (!result)
             {
                 UpdateCheckEEPROMResultOnTable(result);
+
+                if (isNGClick)
+                {
+                    lblCheckResult.Text = "NG";
+                    lblCheckResult.ForeColor = Color.Red;
+
+                    numNotGood++;
+                    updateResultTable();
+
+                    isNGClick = false;
+                }
             }
         }
 
