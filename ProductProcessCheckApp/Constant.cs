@@ -15,7 +15,7 @@ namespace ProductProcessCheckApp
         public static readonly byte CommandReceiveBreathVolume= 0xA7; //呼吸音送信 (G1D→PC)
         public static readonly byte CommandReceiveAcceleSensor= 0xA8; //加速度センサー値送信 (G1D→PC)
         public static readonly byte CommandReceiveWearSensor  = 0xA9; //装着センサー値送信 (G1D→PC)
-        public static readonly byte CommandSendPowerSWOff     = 0xF0; //電源SW OFF送信
+        public static readonly byte CommandSendPowerSWOff     = 0xAA; //電源SW OFF送信
 
         //Service：Declaration
         public static readonly String UUID_SERVICE_DECLARATION     = "d68c0001-a21b-11e5-8cb8-0002a5d5c51b"; //Service: Indicate
