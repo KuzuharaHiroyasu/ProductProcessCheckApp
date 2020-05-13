@@ -194,7 +194,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51936F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48064F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
             this.tableLayoutPanel1.Controls.Add(this.lblVersion, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblAddress, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblModelName, 0, 0);
@@ -211,10 +211,10 @@
             this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblVersion.Location = new System.Drawing.Point(145, 7);
+            this.lblVersion.Location = new System.Drawing.Point(144, 7);
             this.lblVersion.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(146, 15);
+            this.lblVersion.Size = new System.Drawing.Size(145, 15);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "Ver：----------";
             // 
@@ -223,10 +223,10 @@
             this.lblAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAddress.AutoSize = true;
             this.lblAddress.Font = new System.Drawing.Font("MS UI Gothic", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblAddress.Location = new System.Drawing.Point(296, 7);
+            this.lblAddress.Location = new System.Drawing.Point(294, 7);
             this.lblAddress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(225, 15);
+            this.lblAddress.Size = new System.Drawing.Size(227, 15);
             this.lblAddress.TabIndex = 1;
             this.lblAddress.Text = "BDアドレス[-:-:-:-:-:-]";
             // 
@@ -238,7 +238,7 @@
             this.lblModelName.Location = new System.Drawing.Point(3, 1);
             this.lblModelName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblModelName.Name = "lblModelName";
-            this.lblModelName.Size = new System.Drawing.Size(137, 27);
+            this.lblModelName.Size = new System.Drawing.Size(136, 27);
             this.lblModelName.TabIndex = 0;
             this.lblModelName.Text = "機種名：----------";
             // 
@@ -582,12 +582,12 @@
             // 
             this.lblCheckResult.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblCheckResult.AutoSize = true;
-            this.lblCheckResult.Font = new System.Drawing.Font("MS UI Gothic", 70F);
+            this.lblCheckResult.Font = new System.Drawing.Font("MS UI Gothic", 110F);
             this.lblCheckResult.ForeColor = System.Drawing.Color.MediumSeaGreen;
-            this.lblCheckResult.Location = new System.Drawing.Point(57, 72);
+            this.lblCheckResult.Location = new System.Drawing.Point(2, 19);
             this.lblCheckResult.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCheckResult.Name = "lblCheckResult";
-            this.lblCheckResult.Size = new System.Drawing.Size(0, 94);
+            this.lblCheckResult.Size = new System.Drawing.Size(0, 147);
             this.lblCheckResult.TabIndex = 3;
             this.lblCheckResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 

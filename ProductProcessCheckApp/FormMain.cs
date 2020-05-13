@@ -183,6 +183,15 @@ namespace ProductProcessCheckApp
             isNGClick = false;
             if (deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
+                //Reset all button
+                btnBattery.BackColor = Color.White;
+                btnLED.BackColor = Color.White;
+                btnVibration.BackColor = Color.White;
+                btnMike.BackColor = Color.White;
+                btnAcceleSensor.BackColor = Color.White;
+                btnWearSensor.BackColor = Color.White;
+                btnEEPROM.BackColor = Color.White;
+
                 if (textBoxSerialStart.Text != "" || textBoxSerialEnd.Text != "")
                 {
                     if (textBoxSerialStart.Enabled == true && textBoxSerialEnd.Enabled == true)
@@ -237,6 +246,8 @@ namespace ProductProcessCheckApp
 
         private async void btnNG_Click(object sender, EventArgs e)
         {
+            int ngNum;
+
             isNGClick = true;
 
             //[NG(手動)]ボタンクリック
@@ -245,6 +256,30 @@ namespace ProductProcessCheckApp
                 deviceStatus == DeviceStatus.DETECT_LED_OK ||
                 deviceStatus == DeviceStatus.DETECT_VIBRATION_OK)
             {
+                switch (deviceStatus)
+                {
+                    case DeviceStatus.DETECT_BATTERY_OK:
+                        log.scanLogWrite(g_address, "NG", "1");
+                        ngNum = Convert.ToInt32(lblNumCheckBatteryNG.Text) + 1;
+                        lblNumCheckBatteryNG.Text = ngNum.ToString();
+                        btnBattery.BackColor = Color.Red;
+                        break;
+                    case DeviceStatus.DETECT_LED_OK:
+                        log.scanLogWrite(g_address, "NG", "2");
+                        ngNum = Convert.ToInt32(lblNumCheckLedNG.Text) + 1;
+                        lblNumCheckLedNG.Text = ngNum.ToString();
+                        btnLED.BackColor = Color.Red;
+                        break;
+                    case DeviceStatus.DETECT_VIBRATION_OK:
+                        log.scanLogWrite(g_address, "NG", "3");
+                        ngNum = Convert.ToInt32(lblNumCheckVibNG.Text) + 1;
+                        lblNumCheckVibNG.Text = ngNum.ToString();
+                        btnVibration.BackColor = Color.Red;
+                        break;
+                    default:
+                        break;
+                }
+
                 sendCommandSendPowerSWOff();
             }
         }
@@ -330,14 +365,6 @@ namespace ProductProcessCheckApp
             btnNG.Text = "NG(手動)";
             UpdateDeviceStatus(DeviceStatus.NOT_CONNECT);
 
-            //Reset all button
-            btnBattery.BackColor      = Color.White;
-            btnLED.BackColor          = Color.White;
-            btnVibration.BackColor    = Color.White;
-            btnMike.BackColor         = Color.White;
-            btnAcceleSensor.BackColor = Color.White;
-            btnWearSensor.BackColor   = Color.White;
-            btnEEPROM.BackColor       = Color.White;
             if(!isFinish)
             {
                 btnFinish.BackColor = Color.White;
@@ -756,7 +783,7 @@ namespace ProductProcessCheckApp
                         if (isDetectStartMike) //sendCommandDetectMikeStart
                         {
                             isDetectStartMike = false;
-                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "4");
+//                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "4");
 
                             //btnNGには、「マイク」検査開始コマンド受信後[自動検査]に変更する。（クリック動作無効化）
                             btnNG.Enabled = false;
@@ -790,7 +817,7 @@ namespace ProductProcessCheckApp
                         if (isDetectStartAccele) //sendCommandDetectAcceleSensorStart
                         {
                             isDetectStartAccele = false;
-                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "5");
+//                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "5");
                             if (isSentOK)
                             {
                                 btnAcceleSensor.BackColor = Color.Yellow;
@@ -819,7 +846,7 @@ namespace ProductProcessCheckApp
                         if (isDetectStartWear) //sendCommandDetectWearSensorStart
                         {
                             isDetectStartWear = false;
-                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "6");
+//                            log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "6");
                             if (isSentOK)
                             {
                                 btnWearSensor.BackColor = Color.Yellow;
@@ -847,11 +874,13 @@ namespace ProductProcessCheckApp
                     }
                     else if (commandCode == Constant.CommandDetectEEPROM)
                     {
-                        log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "7");
+//                        log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "7");
+                        UpdateCheckEEPROMResultOnTable(isSentOK);
                         if (isSentOK)
                         {
                             btnEEPROM.BackColor = Color.White; //Reset
                             UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
+                            log.scanLogWrite(g_address, "OK", "0");
                             sendCommandSendPowerSWOff();
                         } else
                         {
@@ -861,7 +890,6 @@ namespace ProductProcessCheckApp
                     }
                     else if (commandCode == Constant.CommandSendPowerSWOff)
                     {
-                        UpdateCheckEEPROMResultOnTable(isSentOK);
                         if (isSentOK)
                         {
                             UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
@@ -1045,7 +1073,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "0");
+//                    log.scanLogWrite(g_address, "OK", "0");
 
                     btnNG.Enabled = true; //検査開始でクリック有効化する
 
@@ -1075,8 +1103,6 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "1");
-
                     btnBattery.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_BATTERY_OK);
                 }  
@@ -1104,7 +1130,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "1");
+//                    log.scanLogWrite(g_address, "OK", "1");
 
                     int okNum = Convert.ToInt32(lblNumCheckBatteryOK.Text) + 1;
                     lblNumCheckBatteryOK.Text = okNum.ToString();
@@ -1114,12 +1140,9 @@ namespace ProductProcessCheckApp
                 }
             }
 
-            if(!isSentOk)
+            if (!isSentOk)
             {
                 log.scanLogWrite(g_address, "NG", "1");
-
-                int ngNum = Convert.ToInt32(lblNumCheckBatteryNG.Text) + 1;
-                lblNumCheckBatteryNG.Text = ngNum.ToString();
             }
         }
 
@@ -1138,7 +1161,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "2");
+//                    log.scanLogWrite(g_address, "OK", "2");
 
                     btnLED.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_LED_OK);
@@ -1167,7 +1190,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "2");
+//                    log.scanLogWrite(g_address, "OK", "2");
 
                     int okNum = Convert.ToInt32(lblNumCheckLedOK.Text) + 1;
                     lblNumCheckLedOK.Text = okNum.ToString();
@@ -1180,9 +1203,6 @@ namespace ProductProcessCheckApp
             if (!isSentOk)
             {
                 log.scanLogWrite(g_address, "NG", "2");
-
-                int ngNum = Convert.ToInt32(lblNumCheckLedNG.Text) + 1;
-                lblNumCheckLedNG.Text = ngNum.ToString();
             }
         }
 
@@ -1201,7 +1221,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "3");
+//                    log.scanLogWrite(g_address, "OK", "3");
 
                     btnVibration.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_OK);
@@ -1230,7 +1250,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-                    log.scanLogWrite(g_address, "OK", "3");
+//                    log.scanLogWrite(g_address, "OK", "3");
 
                     int okNum = Convert.ToInt32(lblNumCheckVibOK.Text) + 1;
                     lblNumCheckVibOK.Text = okNum.ToString();
@@ -1240,13 +1260,9 @@ namespace ProductProcessCheckApp
                     sendCommandDetectMikeStart();
                 } 
             }
-
             if (!isSentOk)
             {
                 log.scanLogWrite(g_address, "NG", "3");
-
-                int ngNum = Convert.ToInt32(lblNumCheckVibNG.Text) + 1;
-                lblNumCheckVibNG.Text = ngNum.ToString();
             }
         }
 
@@ -1393,8 +1409,6 @@ namespace ProductProcessCheckApp
             var result = await sendCommand(commandCode, commandName, commandData);
             if (!result)
             {
-                UpdateCheckEEPROMResultOnTable(result);
-
                 if (isNGClick)
                 {
                     isNGClick = false;
@@ -1501,7 +1515,7 @@ namespace ProductProcessCheckApp
             int numTotal = numGood + numNotGood;
             lblNumGood.Text  = numGood.ToString();
             lblNumNG.Text    = numNotGood.ToString();
-            lblNumTotal.Text = numNotGood.ToString();
+            lblNumTotal.Text = numTotal.ToString();
 
             if(numTotal > 0)
             {
@@ -1651,7 +1665,7 @@ namespace ProductProcessCheckApp
 
         private void UpdateCheckMikeResultOnTable(bool isSentOk)
         {
-            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "4");
+//            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "4");
             if (isSentOk && micScanResult)
             {// コマンド応答OK & 判定OK
                 int okNum = Convert.ToInt32(lblNumCheckMicOK.Text) + 1;
@@ -1659,14 +1673,16 @@ namespace ProductProcessCheckApp
             }
             else
             {// コマンド送信失敗 or コマンド応答NG
+                log.scanLogWrite(g_address, "NG", "4");
                 int ngNum = Convert.ToInt32(lblNumCheckMicNG.Text) + 1;
                 lblNumCheckMicNG.Text = ngNum.ToString();
+                btnMike.BackColor = Color.Red;
             }
         }
 
         private void UpdateCheckAclResultOnTable(bool isSentOk)
         {
-            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "5");
+//            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "5");
             if (isSentOk && acceScanResult)
             {
                 int okNum = Convert.ToInt32(lblNumCheckAclOK.Text) + 1;
@@ -1674,14 +1690,16 @@ namespace ProductProcessCheckApp
             }
             else
             {
+                log.scanLogWrite(g_address, "NG", "5");
                 int ngNum = Convert.ToInt32(lblNumCheckAclNG.Text) + 1;
                 lblNumCheckAclNG.Text = ngNum.ToString();
+                btnAcceleSensor.BackColor = Color.Red;
             }
         }
 
         private void UpdateCheckWearResultOnTable(bool isSentOk)
         {
-            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "6");
+//            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "6");
             if (isSentOk && photoScanResult)
             {
                 int okNum = Convert.ToInt32(lblNumCheckPhotoOK.Text) + 1;
@@ -1689,14 +1707,16 @@ namespace ProductProcessCheckApp
             }
             else
             {
+                log.scanLogWrite(g_address, "NG", "6");
                 int ngNum = Convert.ToInt32(lblNumCheckPhotoNG.Text) + 1;
                 lblNumCheckPhotoNG.Text = ngNum.ToString();
+                btnWearSensor.BackColor = Color.Red;
             }
         }
 
         private void UpdateCheckEEPROMResultOnTable(bool isSentOk)
         {
-            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "7");
+//            log.scanLogWrite(g_address, isSentOk ? "OK" : "NG", "7");
             if (isSentOk)
             {
                 int okNum = Convert.ToInt32(lblNumCheckEepOK.Text) + 1;
@@ -1704,8 +1724,10 @@ namespace ProductProcessCheckApp
             }
             else
             {
+                log.scanLogWrite(g_address, "NG", "7");
                 int ngNum = Convert.ToInt32(lblNumCheckEepNG.Text) + 1;
                 lblNumCheckEepNG.Text = ngNum.ToString();
+                btnEEPROM.BackColor = Color.Red;
             }
         }
 
