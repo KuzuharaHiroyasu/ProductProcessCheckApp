@@ -826,7 +826,7 @@ namespace ProductProcessCheckApp
                         else //sendCommandDetectMikeFinish
                         {
                             UpdateCheckMikeResultOnTable(isSentOK);
-                            if (isSentOK)
+                            if (isSentOK && micScanResult)
                             {
                                 btnMike.BackColor = Color.White; //Reset
                                 UpdateDeviceStatus(DeviceStatus.DETECT_MIKE_FINISH_OK);
@@ -855,7 +855,7 @@ namespace ProductProcessCheckApp
                         else //sendCommandDetectAcceleSensorFinish
                         {
                             UpdateCheckAclResultOnTable(isSentOK);
-                            if (isSentOK)
+                            if (isSentOK && acceScanResult)
                             {
                                 btnAcceleSensor.BackColor = Color.White; //Reset
                                 UpdateDeviceStatus(DeviceStatus.DETECT_ACCELE_SENSOR_FINISH_OK);
@@ -884,7 +884,7 @@ namespace ProductProcessCheckApp
                         else //sendCommandDetectWearSensorFinish
                         {
                             UpdateCheckWearResultOnTable(isSentOK);
-                            if (isSentOK)
+                            if (isSentOK && photoScanResult)
                             {
                                 btnWearSensor.BackColor = Color.White; //Reset
                                 UpdateDeviceStatus(DeviceStatus.DETECT_WEAR_SENSOR_FINISH_OK);
@@ -904,10 +904,9 @@ namespace ProductProcessCheckApp
                     {
 //                        log.scanLogWrite(g_address, isSentOK ? "OK" : "NG", "7");
                         UpdateCheckEEPROMResultOnTable(isSentOK);
-                        if (isSentOK)
+                        if (isSentOK && data[1] == (int)CommandReturn.SUCCESS)
                         {
                             btnEEPROM.BackColor = Color.White; //Reset
-                            lblStatus.Text = "";
                             UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
                             log.scanLogWrite(g_address, "OK", "0");
                             sendCommandSendPowerSWOff();
@@ -1440,6 +1439,8 @@ namespace ProductProcessCheckApp
 
             byte[] commandData = new byte[] { commandCode };
 
+            lblStatus.Text = "";
+
             var result = await sendCommand(commandCode, commandName, commandData);
             if (!result)
             {
@@ -1720,6 +1721,8 @@ namespace ProductProcessCheckApp
                 int ngNum = Convert.ToInt32(lblNumCheckMicNG.Text) + 1;
                 lblNumCheckMicNG.Text = ngNum.ToString();
                 btnMike.BackColor = Color.Red;
+                isNGClick = true;
+                sendCommandSendPowerSWOff();
             }
         }
 
@@ -1737,6 +1740,8 @@ namespace ProductProcessCheckApp
                 int ngNum = Convert.ToInt32(lblNumCheckAclNG.Text) + 1;
                 lblNumCheckAclNG.Text = ngNum.ToString();
                 btnAcceleSensor.BackColor = Color.Red;
+                isNGClick = true;
+                sendCommandSendPowerSWOff();
             }
         }
 
@@ -1754,6 +1759,8 @@ namespace ProductProcessCheckApp
                 int ngNum = Convert.ToInt32(lblNumCheckPhotoNG.Text) + 1;
                 lblNumCheckPhotoNG.Text = ngNum.ToString();
                 btnWearSensor.BackColor = Color.Red;
+                isNGClick = true;
+                sendCommandSendPowerSWOff();
             }
         }
 
@@ -1771,6 +1778,8 @@ namespace ProductProcessCheckApp
                 int ngNum = Convert.ToInt32(lblNumCheckEepNG.Text) + 1;
                 lblNumCheckEepNG.Text = ngNum.ToString();
                 btnEEPROM.BackColor = Color.Red;
+                isNGClick = true;
+                sendCommandSendPowerSWOff();
             }
         }
 
