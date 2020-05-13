@@ -1634,6 +1634,15 @@ namespace ProductProcessCheckApp
         {
             // ウインドウを閉じる時に最終結果を書き込み
             log.resultLogWrite(lblCheckPlanNum.Text, lblNumTotal.Text, lblNumGood.Text, lblNumNG.Text);
+            if (watcher != null && deviceWatcher != null)
+            {
+                StopScanning();
+            }
+
+            var message = gattService == null ? Constant.MSG_SLEEIM_IS_NOT_CONNECTING : Constant.MSG_SLEEIM_DISCONNECTED;
+            lblStatus.Text = message;
+
+            DisconnectDevice(false);
         }
 
         private async Task<byte[]> getDataFromDevice(byte receiveCommandCode, string receiveCommandName)
