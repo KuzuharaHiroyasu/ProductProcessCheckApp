@@ -51,9 +51,9 @@ namespace ProductProcessCheckApp
         public static string APP_NAME                     = "生産工程検査ソフト";
         public static string MSG_SLEEIM_NOT_FOUND         = "Sleeimが見つかりませんでした";
         public static string MSG_SLEEIM_IS_CONNECTING     = "";
-        public static string MSG_SLEEIM_IS_NOT_CONNECTING = "Sleeimのデバイスを接続していません";
-        public static string MSG_SLEEIM_DISCONNECTED      = "Sleeimを切断完了しました";
-        public static string MSG_SLEEIM_CONNECT_FAILED    = "Sleeimが接続できませんでした";
+        public static string MSG_SLEEIM_IS_NOT_CONNECTING = "Sleeimと接続していません";
+        public static string MSG_SLEEIM_DISCONNECTED      = "Sleeimとの接続を切断しました";
+        public static string MSG_SLEEIM_CONNECT_FAILED    = "Sleeimと接続できませんでした";
         public static string MSG_SLEEIM_IS_SEARCHING      = "Sleeimを検索しています...";
     }
 

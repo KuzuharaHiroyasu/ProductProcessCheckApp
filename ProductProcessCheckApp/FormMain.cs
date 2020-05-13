@@ -14,6 +14,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Security.Cryptography;
 using System.Drawing;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Text.RegularExpressions;
 
 namespace ProductProcessCheckApp
 {
@@ -183,6 +184,8 @@ namespace ProductProcessCheckApp
             isNGClick = false;
             if (deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
+                btnConnect.Enabled = false;
+
                 //Reset all button
                 btnBattery.BackColor = Color.White;
                 btnLED.BackColor = Color.White;
@@ -192,11 +195,14 @@ namespace ProductProcessCheckApp
                 btnWearSensor.BackColor = Color.White;
                 btnEEPROM.BackColor = Color.White;
 
-                if (textBoxSerialStart.Text != "" || textBoxSerialEnd.Text != "")
+                if (textBoxSerialStart.Enabled == true && textBoxSerialEnd.Enabled == true) 
                 {
-                    if (textBoxSerialStart.Enabled == true && textBoxSerialEnd.Enabled == true)
+                    string strSerialStart = Regex.Replace(textBoxSerialStart.Text, @"[^0-9]", "");
+                    string strSerialEnd = Regex.Replace(textBoxSerialEnd.Text, @"[^0-9]", "");
+
+                    if (strSerialStart != "" || strSerialEnd != "")
                     {
-                        uint planNum = Convert.ToUInt32(textBoxSerialEnd.Text) - Convert.ToUInt32(textBoxSerialStart.Text) + 1;
+                        uint planNum = Convert.ToUInt32(strSerialEnd) - Convert.ToUInt32(strSerialStart) + 1;
 
                         lblCheckPlanNum.Text = planNum.ToString();
                         log.serialLogWrite(textBoxSerialStart.Text, textBoxSerialEnd.Text);
@@ -204,18 +210,20 @@ namespace ProductProcessCheckApp
                         textBoxSerialStart.Enabled = false;
                         textBoxSerialEnd.Enabled = false;
                     }
-
-                    DisconnectDevice(false);
-
-                    SetupSearchTimeOut();
-                    SetupBluetooth();
-
-                    lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
                 }
-            } else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) 
+
+                DisconnectDevice(false);
+
+                SetupSearchTimeOut();
+                SetupBluetooth();
+
+                lblStatus.Text = Constant.MSG_SLEEIM_IS_SEARCHING;
+            }
+            else if (deviceStatus == DeviceStatus.CONNECT_SUCCESS) 
             {
                 //[START]ボタンクリック
                 sendCommandStatusChange();　//状態変更コマンド(0xB0)送信
+                lblStatus.Text = "";
             } else if (deviceStatus == DeviceStatus.DETECT_BATTERY_OK) 
             {
                 //[OK(手動)]ボタンクリック
@@ -242,6 +250,15 @@ namespace ProductProcessCheckApp
             lblStatus.Text = message;
 
             DisconnectDevice(false);
+
+            //Reset all button
+            btnBattery.BackColor = Color.White;
+            btnLED.BackColor = Color.White;
+            btnVibration.BackColor = Color.White;
+            btnMike.BackColor = Color.White;
+            btnAcceleSensor.BackColor = Color.White;
+            btnWearSensor.BackColor = Color.White;
+            btnEEPROM.BackColor = Color.White;
         }
 
         private async void btnNG_Click(object sender, EventArgs e)
@@ -287,7 +304,7 @@ namespace ProductProcessCheckApp
         private void UpdateDeviceStatus(DeviceStatus status, String statusMessage = "")
         {
             deviceStatus = status;
-            btnConnect.Enabled = true;
+            
             if (status == DeviceStatus.CONNECT_SUCCESS)
             {
                 btnConnect.Text = "START";
@@ -307,6 +324,8 @@ namespace ProductProcessCheckApp
                 micScanResult = false;
                 acceScanResult = false;
                 photoScanResult = false;
+
+                btnConnect.Enabled = true;
             } else if (status == DeviceStatus.STATUS_CHANGE_OK)
             {
                 btnConnect.Text = "OK(手動)";
@@ -318,11 +337,12 @@ namespace ProductProcessCheckApp
             {
                 deviceStatus = DeviceStatus.NOT_CONNECT;
                 btnConnect.Text = "接続";
+                btnConnect.Enabled = true;
             }
 
             if (statusMessage != "")
             {
-                lblStatus.Text = statusMessage;
+//                lblStatus.Text = statusMessage;
             }
         }
 
@@ -501,12 +521,12 @@ namespace ProductProcessCheckApp
                     TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
 
                     //Step2: PairDevice
-                    var message = "Sleeim[" + address + "]をペアリングしています";
+                    var message = "Sleeim[" + address + "]　ペアリング中";
                     lblStatus.Text = message;
                     await PairDevice(device);
 
                     //Step3: ConnectDevice
-                    message = "Sleeim[" + address + "]を接続しています";
+                    message = "Sleeim[" + address + "]　接続中";
                     lblStatus.Text = message;
 
                     try
@@ -516,25 +536,33 @@ namespace ProductProcessCheckApp
                         {
                             StopScanning();
 
-                            UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]を成功に接続しました");
+                            UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]　接続完了");
+
+                            message = "Sleeim[" + address + "]　接続完了";
+                            lblStatus.Text = message;
+
                             lblAddress.Text = "BDアドレス[" + address + "]";
 
                             bleDevice = device;
                             startedFlag = false;
 
                             var isEnabled = await EnableNotification();
-                            Debug.WriteLine("デバイスからPCに通知を" + (isEnabled ? "成功" : "失敗") + "に有効化しました");
+                            Debug.WriteLine("デバイスからの通知：" + (isEnabled ? "成功" : "失敗"));
 
                             await RegisterNotificationWhenValueChanged();
                         }
                         else
                         {
-                            UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました");
+                            UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]　接続失敗");
+                            message = "Sleeim[" + address + "]　接続失敗";
+                            lblStatus.Text = message;
                         }
                     }
                     catch (Exception e)
                     {
-                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]を失敗に接続しました");
+                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]　接続失敗");
+                        message = "Sleeim[" + address + "]　接続失敗";
+                        lblStatus.Text = message;
                     }
                 }
             }
@@ -879,6 +907,7 @@ namespace ProductProcessCheckApp
                         if (isSentOK)
                         {
                             btnEEPROM.BackColor = Color.White; //Reset
+                            lblStatus.Text = "";
                             UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
                             log.scanLogWrite(g_address, "OK", "0");
                             sendCommandSendPowerSWOff();
@@ -939,7 +968,8 @@ namespace ProductProcessCheckApp
 
                 SetMicData(receivedData[1] << 2);
                 numReceivedBreath++;
-                lblStatus.Text = "デバイスから呼吸音を受信中...(Data " + numReceivedBreath + ")";
+                //                lblStatus.Text = "デバイスから呼吸音を受信中...(Data " + numReceivedBreath + ")";
+                lblStatus.Text = "マイク検査中";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedBreath + ")");
 
                 receivedBreathData.Add(receivedData);
@@ -964,7 +994,8 @@ namespace ProductProcessCheckApp
 
                 SetAcceData(receivedData[1], receivedData[3], receivedData[5]);
                 numReceivedAccele++;
-                lblStatus.Text = "デバイスから加速度センサー値を受信中...(Data " + numReceivedAccele + ")";
+                //                lblStatus.Text = "デバイスから加速度センサー値を受信中...(Data " + numReceivedAccele + ")";
+                lblStatus.Text = "加速度センサー検査中";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedAccele + ")");
 
                 receivedAcceleData.Add(receivedData);
@@ -989,7 +1020,8 @@ namespace ProductProcessCheckApp
 
                 SetPotoData(receivedData[1] << 2);
                 numReceivedWear++;
-                lblStatus.Text = "デバイスから装着センサー値を受信中...(Data " + numReceivedWear + ")";
+                //                lblStatus.Text = "デバイスから装着センサー値を受信中...(Data " + numReceivedWear + ")";
+                lblStatus.Text = "装着センサー検査中";
                 Debug.WriteLine("Receive Data From Command 0x" + commandCode.ToString("X") + "(Count " + numReceivedWear + ")");
 
                 receivedWearData.Add(receivedData);
@@ -1103,6 +1135,7 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
+                    lblStatus.Text = "充電検査中";
                     btnBattery.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_BATTERY_OK);
                 }  
@@ -1161,8 +1194,8 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-//                    log.scanLogWrite(g_address, "OK", "2");
-
+                    //                    log.scanLogWrite(g_address, "OK", "2");
+                    lblStatus.Text = "LED検査中";
                     btnLED.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_LED_OK);
                 }
@@ -1221,8 +1254,8 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-//                    log.scanLogWrite(g_address, "OK", "3");
-
+                    //                    log.scanLogWrite(g_address, "OK", "3");
+                    lblStatus.Text = "バイブレーション検査中";
                     btnVibration.BackColor = Color.Yellow;
                     UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_OK);
                 }
@@ -1392,6 +1425,7 @@ namespace ProductProcessCheckApp
                 sendCommandSendPowerSWOff();
             } else
             {
+                lblStatus.Text = "EEPROM検査中";
                 //System.Threading.Thread.Sleep(1000);
                 //btnEEPROM.BackColor = Color.White; //Reset
                 //UpdateDeviceStatus(DeviceStatus.DETECT_EEPROM_OK);
@@ -1427,7 +1461,7 @@ namespace ProductProcessCheckApp
         {
             bool ret = false;
             Debug.WriteLine("Update Mike Chart Area");
-            lblStatus.Text = "マイクチャットを更新しました";
+ //           lblStatus.Text = "マイクチャットを更新しました";
             foreach(byte data in receivedData[1])
             {
                 if((data << 2) >= breath_min)
@@ -1449,7 +1483,7 @@ namespace ProductProcessCheckApp
             int z = 0; //加速度センサー（Ｚ）//receiveData[i][5]
 
             Debug.WriteLine("Update Accele Sensor Chart Area");
-            lblStatus.Text = "加速度センサーチャットを更新しました";
+//            lblStatus.Text = "加速度センサーチャットを更新しました";
 
 
             foreach (byte[] data in receivedData)
@@ -1497,7 +1531,7 @@ namespace ProductProcessCheckApp
             bool ret = false;
 
             Debug.WriteLine("Update Wear Sensor Chart Area");
-            lblStatus.Text = "装着センサーチャットを更新しました";
+//            lblStatus.Text = "装着センサーチャットを更新しました";
 
             foreach (int data in receivedData[1])
             {
@@ -1531,17 +1565,17 @@ namespace ProductProcessCheckApp
         {
             if (writeCharacteristic != null)
             {
-                lblStatus.Text = commandName + "を送信中...";
+//                lblStatus.Text = commandName + "を送信中...";
 
                 var result = await WriteCommandToDevice(commandData);
                 if (result == CommandResult.SUCCESS)
                 {
-                    lblStatus.Text = commandName + "を成功に送信しました";
+//                    lblStatus.Text = commandName + "の送信成功";
                     return true;
                 }
                 else
                 {
-                    lblStatus.Text = commandName + "を失敗に送信しました";
+                    lblStatus.Text = commandName + "の送信失敗";
                 }
             }
             else
@@ -1625,7 +1659,7 @@ namespace ProductProcessCheckApp
             }
             else
             {
-                lblStatus.Text = commandName + "を失敗に送信しました";
+                lblStatus.Text = commandName + "の送信失敗";
                 return false;
             }
         }
@@ -1666,7 +1700,7 @@ namespace ProductProcessCheckApp
 
             if(!receivedFlag)
             {
-                lblStatus.Text = "デバイスから" + receiveCommandName + "を失敗に受信しました";
+                lblStatus.Text = "デバイスから" + receiveCommandName + "の受信失敗";
             }
 
             return receiveData;
