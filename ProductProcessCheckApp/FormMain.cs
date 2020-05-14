@@ -938,6 +938,7 @@ namespace ProductProcessCheckApp
                             {
                                 numGood++;
                                 updateResultTable();
+                                lblCheckResult.ForeColor = Color.MediumSeaGreen;
                                 lblCheckResult.Text = "OK";
                             }
                         } else
@@ -1554,7 +1555,7 @@ namespace ProductProcessCheckApp
 
             if(numTotal > 0)
             {
-                double ngRate = System.Math.Round((double)(numNotGood / numTotal * 100), 1);
+                double ngRate = System.Math.Round((double)((double)numNotGood / (double)numTotal * 100), 1);
                 lblRate.Text = $"{ngRate}%";
             } else
             {
