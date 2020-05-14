@@ -518,6 +518,8 @@ namespace ProductProcessCheckApp
                 var device = await SearchDevice(args);
                 if (device != null)
                 {
+                    StopScanning();
+
                     TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
 
                     //Step2: PairDevice
@@ -534,7 +536,7 @@ namespace ProductProcessCheckApp
                         var isConnected = await ConnectDevice(device);
                         if (isConnected)
                         {
-                            StopScanning();
+                            
 
                             UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]　接続完了");
 
