@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -24,7 +25,7 @@ namespace ProductProcessCheckApp
             //string workingDirectory = System.Environment.CurrentDirectory;
             //string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
 
-            string projectPath = System.IO.Path.GetFullPath(@"..\..\");
+            string projectPath = AppDomain.CurrentDomain.BaseDirectory;
             Path = projectPath + FileName ?? (AppName + ".ini");
             //Path = new FileInfo(IniPath ?? AppName + ".ini").FullName.ToString();
         }
