@@ -76,6 +76,8 @@ namespace ProductProcessCheckApp
         private int photo_max = 0;
         private int photo_min = 0;
 
+        private string bdAddress = "";
+
         public FormMain()
         {
             InitializeComponent();
@@ -214,6 +216,8 @@ namespace ProductProcessCheckApp
 
                 DisconnectDevice(false);
 
+                bdAddress = ini.Read("ADDRESS", "BD_ADDRESS");
+                
                 SetupSearchTimeOut();
                 SetupBluetooth();
 
@@ -518,64 +522,67 @@ namespace ProductProcessCheckApp
             string address = args.BluetoothAddress.ToString("x");
             address = Utility.getFormatDeviceAddress(address);
 
-            try
+            if (address.Contains(bdAddress))
             {
-                var device = await SearchDevice(args);
-                if (device != null)
+                try
                 {
-                    StopScanning();
-
-                    TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
-
-                    //Step2: PairDevice
-                    var message = "Sleeim[" + address + "]　ペアリング中";
-                    lblStatus.Text = message;
-                    await PairDevice(device);
-
-                    //Step3: ConnectDevice
-                    message = "Sleeim[" + address + "]　接続中";
-                    lblStatus.Text = message;
-
-                    try
+                    var device = await SearchDevice(args);
+                    if (device != null)
                     {
-                        var isConnected = await ConnectDevice(device);
-                        if (isConnected)
+                        StopScanning();
+
+                        TextBox.CheckForIllegalCrossThreadCalls = false; //Avoid error when call from other thread 
+
+                        //Step2: PairDevice
+                        var message = "Sleeim[" + address + "]　ペアリング中";
+                        lblStatus.Text = message;
+                        await PairDevice(device);
+
+                        //Step3: ConnectDevice
+                        message = "Sleeim[" + address + "]　接続中";
+                        lblStatus.Text = message;
+
+                        try
                         {
-                            
+                            var isConnected = await ConnectDevice(device);
+                            if (isConnected)
+                            {
 
-                            UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]　接続完了");
 
-                            message = "Sleeim[" + address + "]　接続完了";
-                            lblStatus.Text = message;
+                                UpdateDeviceStatus(DeviceStatus.CONNECT_SUCCESS, "Sleeim[" + address + "]　接続完了");
 
-                            lblAddress.Text = "BDアドレス[" + address + "]";
+                                message = "Sleeim[" + address + "]　接続完了";
+                                lblStatus.Text = message;
 
-                            bleDevice = device;
-                            startedFlag = false;
+                                lblAddress.Text = "BDアドレス[" + address + "]";
 
-                            var isEnabled = await EnableNotification();
-                            Debug.WriteLine("デバイスからの通知：" + (isEnabled ? "成功" : "失敗"));
+                                bleDevice = device;
+                                startedFlag = false;
 
-                            await RegisterNotificationWhenValueChanged();
+                                var isEnabled = await EnableNotification();
+                                Debug.WriteLine("デバイスからの通知：" + (isEnabled ? "成功" : "失敗"));
+
+                                await RegisterNotificationWhenValueChanged();
+                            }
+                            else
+                            {
+                                UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]　接続失敗");
+                                message = "Sleeim[" + address + "]　接続失敗";
+                                lblStatus.Text = message;
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
                             UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]　接続失敗");
                             message = "Sleeim[" + address + "]　接続失敗";
                             lblStatus.Text = message;
                         }
                     }
-                    catch (Exception e)
-                    {
-                        UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, "Sleeim[" + address + "]　接続失敗");
-                        message = "Sleeim[" + address + "]　接続失敗";
-                        lblStatus.Text = message;
-                    }
                 }
-            }
-            catch (Exception e)
-            {
+                catch (Exception e)
+                {
 
+                }
             }
         }
 
