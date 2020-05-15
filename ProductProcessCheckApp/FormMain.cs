@@ -236,6 +236,11 @@ namespace ProductProcessCheckApp
             {
                 //[OK(手動)]ボタンクリック
                 sendCommandDetectVibrationFinish();
+            } else if (deviceStatus == DeviceStatus.DETECT_VIBRATION_FINISH_OK)
+            {
+                btnConnect.Enabled = false;
+                //[自動検査開始]ボタンクリック
+                sendCommandDetectMikeStart();
             }
         }
 
@@ -331,8 +336,8 @@ namespace ProductProcessCheckApp
                 btnConnect.Text = "OK(手動)";
             } else if (status == DeviceStatus.DETECT_VIBRATION_FINISH_OK)
             {
-                btnConnect.Text = "自動検査";
-                btnConnect.Enabled = false;
+                lblStatus.Text = "Sleeimを治具にセットし、治具の音声再生ボタンを\r\n押してから、自動検査開始ボタンを押してください";
+                btnConnect.Text = "自動検査検査開始";
             } else if (status == DeviceStatus.NOT_CONNECT || status == DeviceStatus.CONNECT_FAILED)
             {
                 deviceStatus = DeviceStatus.NOT_CONNECT;
@@ -1292,7 +1297,6 @@ namespace ProductProcessCheckApp
 
                     btnVibration.BackColor = Color.White; //Reset
                     UpdateDeviceStatus(DeviceStatus.DETECT_VIBRATION_FINISH_OK);
-                    sendCommandDetectMikeStart();
                 } 
             }
             if (!isSentOk)
@@ -1466,9 +1470,10 @@ namespace ProductProcessCheckApp
             bool ret = false;
             Debug.WriteLine("Update Mike Chart Area");
  //           lblStatus.Text = "マイクチャットを更新しました";
-            foreach(byte data in receivedData[1])
+        
+            foreach(byte[] data in receivedData)
             {
-                if((data << 2) >= breath_min)
+                if ((data[1] << 2) >= breath_min)
                 {
                     ret = true;
                     break;
@@ -1537,9 +1542,9 @@ namespace ProductProcessCheckApp
             Debug.WriteLine("Update Wear Sensor Chart Area");
 //            lblStatus.Text = "装着センサーチャットを更新しました";
 
-            foreach (int data in receivedData[1])
+            foreach (byte[] data in receivedData)
             {
-                if ((data << 2) >= photo_min)
+                if ((data[1] << 2) >= photo_min)
                 {
                     ret = true;
                     break;
