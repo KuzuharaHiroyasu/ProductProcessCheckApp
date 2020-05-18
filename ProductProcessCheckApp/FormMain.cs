@@ -1494,9 +1494,13 @@ namespace ProductProcessCheckApp
         {
             bool ret = true;
 
-            int x = 0; //加速度センサー（X） //receiveData[i][1]
-            int y = 0; //加速度センサー（Ｙ）//receiveData[i][3]
-            int z = 0; //加速度センサー（Ｚ）//receiveData[i][5]
+            int x = 0; //加速度センサー（X）//receiveData[i][1]
+            int y = 0; //加速度センサー（Y）//receiveData[i][3]
+            int z = 0; //加速度センサー（Z）//receiveData[i][5]
+
+            int x_ret = 0;
+            int y_ret = 0;
+            int z_ret = 0;
 
             Debug.WriteLine("Update Accele Sensor Chart Area");
 //            lblStatus.Text = "加速度センサーチャットを更新しました";
@@ -1511,8 +1515,7 @@ namespace ProductProcessCheckApp
                 }
                 if (x <= acce_x_min || x >= acce_x_max)
                 {
-                    ret = false;
-                    break;
+                    x_ret++;
                 }
 
                 y = Convert.ToInt16(data[3]);
@@ -1522,8 +1525,7 @@ namespace ProductProcessCheckApp
                 }
                 if (y <= acce_y_min || y >= acce_y_max)
                 {
-                    ret = false;
-                    break;
+                    y_ret++;
                 }
 
                 z = Convert.ToInt16(data[5]);
@@ -1533,9 +1535,13 @@ namespace ProductProcessCheckApp
                 }
                 if (z <= acce_z_min || z >= acce_z_max)
                 {
-                    ret = false;
-                    break;
+                    z_ret++;
                 }
+            }
+
+            if(x_ret >= 40 || y_ret >= 40 || z_ret >= 40 )
+            {
+                ret = false;
             }
 
             return ret;
