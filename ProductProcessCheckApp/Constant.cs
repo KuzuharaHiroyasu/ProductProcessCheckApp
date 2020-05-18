@@ -46,7 +46,7 @@ namespace ProductProcessCheckApp
         //public static String UUID_CHAR_WRITE = UUID_CHAR_READ_WRITE1; //OR UUID_CHAR_READ_WRITE2  //Used to send command
 
 
-        public static readonly int MAX_SEARCH_TIME = 30 * 1000; //40秒
+        public static readonly int MAX_SEARCH_TIME = 15 * 1000; //40秒
 
         public static string APP_NAME                     = "生産工程検査ソフト";
         public static string MSG_SLEEIM_NOT_FOUND         = "Sleeimが見つかりませんでした";

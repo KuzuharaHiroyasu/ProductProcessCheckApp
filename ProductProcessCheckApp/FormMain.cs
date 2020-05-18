@@ -729,6 +729,8 @@ namespace ProductProcessCheckApp
                 StopScanning();
 
                 UpdateDeviceStatus(DeviceStatus.NOT_CONNECT, Constant.MSG_SLEEIM_NOT_FOUND);
+
+                lblStatus.Text = Constant.MSG_SLEEIM_NOT_FOUND;
             }
         }
 
