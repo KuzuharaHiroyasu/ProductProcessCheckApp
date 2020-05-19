@@ -78,6 +78,8 @@ namespace ProductProcessCheckApp
 
         private string bdAddress = "";
 
+        private bool isDisconnect = false;
+
         public FormMain()
         {
             InitializeComponent();
@@ -258,7 +260,11 @@ namespace ProductProcessCheckApp
             var message = gattService == null ? Constant.MSG_SLEEIM_IS_NOT_CONNECTING : Constant.MSG_SLEEIM_DISCONNECTED;
             lblStatus.Text = message;
 
-            DisconnectDevice(false);
+            isDisconnect = true;
+
+            sendCommandStatusChange();　//状態変更コマンド(0xB0)送信
+
+//            DisconnectDevice(false);
 
             //Reset all button
             btnBattery.BackColor = Color.White;
@@ -934,36 +940,53 @@ namespace ProductProcessCheckApp
                     }
                     else if (commandCode == Constant.CommandSendPowerSWOff)
                     {
-                        if (isSentOK)
+                        if (!isDisconnect)
                         {
-                            UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
-                            DisconnectDevice(true);
 
-                            btnFinish.BackColor = Color.Yellow;
+                            if (isSentOK)
+                            {
+                                UpdateDeviceStatus(DeviceStatus.SEND_POWER_OFF_OK);
+                                DisconnectDevice(true);
 
-                            if (isNGClick)
+                                btnFinish.BackColor = Color.Yellow;
+
+                                if (isNGClick)
+                                {
+                                    lblCheckResult.Text = "NG";
+                                    lblCheckResult.ForeColor = Color.Red;
+
+                                    numNotGood++;
+                                    updateResultTable();
+
+                                    isNGClick = false;
+                                }
+                                else
+                                {
+                                    numGood++;
+                                    updateResultTable();
+                                    lblCheckResult.ForeColor = Color.MediumSeaGreen;
+                                    lblCheckResult.Text = "OK";
+                                }
+                            }
+                            else
                             {
                                 lblCheckResult.Text = "NG";
                                 lblCheckResult.ForeColor = Color.Red;
 
                                 numNotGood++;
                                 updateResultTable();
-
-                                isNGClick = false;
-                            } else
-                            {
-                                numGood++;
-                                updateResultTable();
-                                lblCheckResult.ForeColor = Color.MediumSeaGreen;
-                                lblCheckResult.Text = "OK";
                             }
-                        } else
+                        }
+                        else
                         {
-                            lblCheckResult.Text = "NG";
-                            lblCheckResult.ForeColor = Color.Red;
-
-                            numNotGood++;
-                            updateResultTable();
+                            isDisconnect = false;
+                            DisconnectDevice(true);
+                        }
+                    }else if(commandCode == Constant.CommandStatusChange)
+                    {
+                        if (isDisconnect)
+                        {
+                            sendCommandSendPowerSWOff();
                         }
                     }
 
@@ -1121,12 +1144,15 @@ namespace ProductProcessCheckApp
                 isSentOk = await isCommandSent(commandCode, commandName);
                 if (isSentOk)
                 {
-//                    log.scanLogWrite(g_address, "OK", "0");
+                    if (!isDisconnect)
+                    {
+                        //                    log.scanLogWrite(g_address, "OK", "0");
 
-                    btnNG.Enabled = true; //検査開始でクリック有効化する
+                        btnNG.Enabled = true; //検査開始でクリック有効化する
 
-                    UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
-                    sendCommandDetectBatteryStart();
+                        UpdateDeviceStatus(DeviceStatus.STATUS_CHANGE_OK); //ボタンを[OK(手動)]にする
+                        sendCommandDetectBatteryStart();
+                    }
                 }
             }
 
