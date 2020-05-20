@@ -188,6 +188,7 @@ namespace ProductProcessCheckApp
             isNGClick = false;
             if (deviceStatus == DeviceStatus.NOT_CONNECT || deviceStatus == DeviceStatus.CONNECT_FAILED) //接続処理
             {
+                isDisconnect = false;
                 btnConnect.Enabled = false;
 
                 //Reset all button
@@ -980,7 +981,6 @@ namespace ProductProcessCheckApp
                         else
                         {
                             isDisconnect = false;
-                            DisconnectDevice(true);
                         }
                     }else if(commandCode == Constant.CommandStatusChange)
                     {
@@ -1159,6 +1159,10 @@ namespace ProductProcessCheckApp
             if(!isSentOk)
             {
                 log.scanLogWrite(g_address, "NG", "0");
+                if(isDisconnect)
+                {
+                    DisconnectDevice(false);
+                }
             }
         }
 
@@ -1496,6 +1500,13 @@ namespace ProductProcessCheckApp
 
                 numNotGood++;
                 updateResultTable();
+            }
+            else
+            {
+                if (isDisconnect)
+                {
+                    DisconnectDevice(true);
+                }
             }
         }
 
